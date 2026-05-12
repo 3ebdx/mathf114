@@ -1,0 +1,1784 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATHF114 — Chapitre 4 : Fonctions dérivables</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left: '$$', right: '$$', display: true},
+      {left: '$', right: '$', display: false}
+    ],
+    throwOnError: false
+  });"></script>
+<style>
+  :root {
+    --bg: #EFF6FF;
+    --bg-card: #FFFFFF;
+    --bg-sidebar: #1E3A5F;
+    --sidebar-w: 260px;
+    --accent: #2563EB;
+    --accent-light: #DBEAFE;
+    --accent-mid: #93C5FD;
+    --green: #059669;
+    --green-light: #D1FAE5;
+    --red: #DC2626;
+    --red-light: #FEE2E2;
+    --amber: #D97706;
+    --amber-light: #FEF3C7;
+    --text: #0F172A;
+    --text-muted: #475569;
+    --text-light: #94A3B8;
+    --border: #CBD5E1;
+    --border-light: #E2E8F0;
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Source Serif 4', Georgia, serif;
+    --sans: 'Outfit', sans-serif;
+    --radius: 10px;
+    --shadow: 0 2px 12px rgba(30,58,95,0.08);
+    --shadow-lg: 0 8px 32px rgba(30,58,95,0.14);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--serif);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 17px;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--bg-sidebar);
+    color: #E2E8F0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  #sidebar-header {
+    padding: 28px 20px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  #sidebar-header .course-tag {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-mid);
+    margin-bottom: 6px;
+  }
+
+  #sidebar-header h1 {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    color: #F1F5F9;
+    line-height: 1.3;
+  }
+
+  /* Progress bar */
+  #progress-wrap {
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  #progress-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: #94A3B8;
+    margin-bottom: 7px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #progress-bar-outer {
+    height: 5px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  #progress-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, #3B82F6, #60A5FA);
+    border-radius: 99px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* Nav links */
+  #nav-links {
+    flex: 1;
+    padding: 10px 0;
+    list-style: none;
+  }
+
+  #nav-links li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    color: #94A3B8;
+    text-decoration: none;
+    transition: all 0.18s;
+    border-left: 3px solid transparent;
+  }
+
+  #nav-links li a:hover {
+    color: #F1F5F9;
+    background: rgba(255,255,255,0.04);
+  }
+
+  #nav-links li a.active {
+    color: #60A5FA;
+    border-left-color: #60A5FA;
+    background: rgba(96,165,250,0.06);
+  }
+
+  #nav-links li a.done {
+    color: #34D399;
+  }
+
+  .nav-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-family: var(--sans);
+  }
+
+  .nav-done-icon { font-size: 12px; }
+
+  /* ── MAIN ── */
+  #main {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+  }
+
+  #top-bar {
+    position: sticky;
+    top: 0;
+    background: rgba(239,246,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-light);
+    z-index: 50;
+    padding: 12px 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  #top-bar .chapter-label {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  #top-bar .chapter-title {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* Sections */
+  .section {
+    padding: 56px 48px 80px;
+    max-width: 840px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-family: var(--sans);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.25;
+  }
+
+  .section-intro {
+    font-size: 17px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.65;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-label {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .card-label.intuition { color: #7C3AED; }
+  .card-label.definition { color: var(--accent); }
+  .card-label.example { color: var(--green); }
+  .card-label.method { color: var(--amber); }
+  .card-label.warning { color: var(--red); }
+  .card-label.schema { color: #0891B2; }
+
+  .card.intuition-card {
+    border-left: 4px solid #7C3AED;
+    background: #FAFAFF;
+  }
+
+  .card.definition-card {
+    border-left: 4px solid var(--accent);
+    background: #F8FBFF;
+  }
+
+  .card.example-card {
+    border-left: 4px solid var(--green);
+    background: #F0FDF8;
+  }
+
+  .card.warning-card {
+    border-left: 4px solid var(--red);
+    background: #FFF8F8;
+  }
+
+  .card.method-card {
+    border-left: 4px solid var(--amber);
+    background: #FFFBF0;
+  }
+
+  /* Formula blocks */
+  .formula-box {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent-mid);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    text-align: center;
+    overflow-x: auto;
+  }
+
+  .formula-box .katex-display { margin: 0; }
+
+  /* Steps */
+  .steps { margin: 14px 0; }
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .step-num {
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; line-height: 1.65; }
+  .step-body p { margin-bottom: 6px; }
+
+  /* Tables */
+  .deriv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin: 8px 0;
+  }
+  .deriv-table th {
+    background: var(--bg-sidebar);
+    color: white;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    text-align: left;
+  }
+  .deriv-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+  }
+  .deriv-table tr:hover td { background: var(--accent-light); }
+  .deriv-table tr:last-child td { border-bottom: none; }
+
+  /* SVG diagrams */
+  .diagram-wrap {
+    margin: 20px 0;
+    text-align: center;
+  }
+  .diagram-wrap svg {
+    max-width: 100%;
+    height: auto;
+  }
+  .diagram-caption {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+
+  /* ── QUIZ / EXERCISES ── */
+  .quiz-block {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    margin-top: 28px;
+  }
+
+  .quiz-title {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .quiz-question {
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  /* QCM */
+  .qcm-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .qcm-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 14px;
+    transition: all 0.15s;
+    background: var(--bg);
+    user-select: none;
+  }
+
+  .qcm-opt:hover { border-color: var(--accent); background: var(--accent-light); }
+
+  .qcm-opt.selected { border-color: var(--accent); background: var(--accent-light); }
+  .qcm-opt.correct { border-color: var(--green); background: var(--green-light); color: #065F46; }
+  .qcm-opt.wrong { border-color: var(--red); background: var(--red-light); color: #7F1D1D; }
+
+  .qcm-opt-letter {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Input quizzes */
+  .input-quiz {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .input-quiz input {
+    font-family: var(--mono);
+    font-size: 15px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 9px 14px;
+    background: var(--bg);
+    color: var(--text);
+    width: 160px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .input-quiz input:focus { border-color: var(--accent); }
+  .input-quiz input.correct { border-color: var(--green); background: var(--green-light); }
+  .input-quiz input.wrong { border-color: var(--red); background: var(--red-light); }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #1D4ED8; }
+
+  .btn-secondary {
+    background: var(--border-light);
+    color: var(--text-muted);
+  }
+  .btn-secondary:hover { background: var(--border); }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: var(--green-light); color: #065F46; border: 1px solid #6EE7B7; }
+  .feedback.wrong { background: var(--red-light); color: #7F1D1D; border: 1px solid #FCA5A5; }
+  .feedback.info { background: var(--amber-light); color: #78350F; border: 1px solid #FCD34D; }
+
+  /* Hint toggle */
+  .hint-toggle {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: underline dotted;
+    margin-top: 8px;
+    display: inline-block;
+  }
+  .hint-toggle:hover { color: var(--accent); }
+
+  .hint-content {
+    display: none;
+    background: var(--amber-light);
+    border: 1px solid #FCD34D;
+    border-radius: 7px;
+    padding: 10px 14px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-family: var(--sans);
+    color: #78350F;
+    line-height: 1.5;
+  }
+  .hint-content.show { display: block; }
+
+  /* Redaction style note */
+  .redac-note {
+    background: #F8F4FF;
+    border: 1px solid #C4B5FD;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 12px 0;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: #5B21B6;
+    line-height: 1.5;
+  }
+  .redac-note strong { font-weight: 700; }
+
+  /* Mono code inline */
+  code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--accent-light);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: var(--border-light);
+    margin: 28px 0;
+  }
+
+  /* H-sub headings */
+  h3 {
+    font-family: var(--sans);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 24px 0 10px;
+  }
+
+  h4 {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin: 16px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  p { margin-bottom: 12px; }
+
+  ul { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 5px; }
+
+  /* Scrollbar */
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 99px; }
+
+  /* Two-column grid for small formula pairs */
+  .col-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 14px 0;
+  }
+
+  @media (max-width: 700px) {
+    .col-2 { grid-template-columns: 1fr; }
+    #sidebar { display: none; }
+    #main { margin-left: 0; }
+    .section { padding: 32px 20px 60px; }
+  }
+
+  /* Inline math font */
+  .katex { font-size: 1em; }
+
+  /* Highlight important result */
+  .result-box {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 16px 0;
+    text-align: center;
+  }
+
+  /* Answer reveal for multi-step */
+  .step-answer {
+    font-family: var(--mono);
+    font-size: 14px;
+    background: var(--accent-light);
+    border-radius: 5px;
+    padding: 3px 8px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* Exam style annotation */
+  .exam-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #B45309;
+    background: #FEF3C7;
+    border: 1px solid #FCD34D;
+    padding: 3px 10px;
+    border-radius: 99px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div id="sidebar-header">
+    <div class="course-tag">MATHF114 — ULB</div>
+    <h1>Chapitre 4<br>Fonctions dérivables</h1>
+  </div>
+
+  <div id="progress-wrap">
+    <div id="progress-label">
+      <span>Progression</span>
+      <span id="progress-text">0 / 7</span>
+    </div>
+    <div id="progress-bar-outer">
+      <div id="progress-bar-inner"></div>
+    </div>
+  </div>
+
+  <ul id="nav-links">
+    <li><a href="#s1" id="nav-1">
+      <span class="nav-num">1</span>
+      <span>La dérivée : intuition &amp; définition</span>
+    </a></li>
+    <li><a href="#s2" id="nav-2">
+      <span class="nav-num">2</span>
+      <span>Règles de dérivation</span>
+    </a></li>
+    <li><a href="#s3" id="nav-3">
+      <span class="nav-num">3</span>
+      <span>Dérivées usuelles</span>
+    </a></li>
+    <li><a href="#s4" id="nav-4">
+      <span class="nav-num">4</span>
+      <span>Théorème de Rolle &amp; TAF</span>
+    </a></li>
+    <li><a href="#s5" id="nav-5">
+      <span class="nav-num">5</span>
+      <span>Règle de L'Hôpital</span>
+    </a></li>
+    <li><a href="#s6" id="nav-6">
+      <span class="nav-num">6</span>
+      <span>Polynômes de Taylor</span>
+    </a></li>
+    <li><a href="#s7" id="nav-7">
+      <span class="nav-num">7</span>
+      <span>Approximations numériques</span>
+    </a></li>
+  </ul>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+
+  <div id="top-bar">
+    <span class="chapter-label">Chapitre 4</span>
+    <span class="chapter-title">Fonctions dérivables</span>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SECTION 1 — Définition
+  ══════════════════════════════════ -->
+  <section class="section" id="s1">
+    <div class="section-badge">Section 1</div>
+    <h2 class="section-title">La dérivée : intuition &amp; définition</h2>
+    <p class="section-intro">
+      La dérivée mesure à quelle vitesse une fonction change. C'est la pente de la tangente au graphe en un point.
+    </p>
+
+    <!-- Intuition -->
+    <div class="card intuition-card">
+      <div class="card-label intuition">Intuition</div>
+      <p>Imagine que tu roules en voiture : le compteur de vitesse affiche ta <strong>vitesse instantanée</strong> — c'est exactement ce qu'est la dérivée, mais pour une fonction mathématique.</p>
+      <p>Formellement, on considère le rapport entre la variation de $f$ et la variation de $x$ (le <em>taux d'accroissement</em>), puis on fait tendre cette variation vers zéro.</p>
+    </div>
+
+    <!-- SVG Diagram: tangent line -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" style="max-width:480px; border-radius:10px; background:#fff; border:1px solid #E2E8F0;">
+        <!-- Grid -->
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#94A3B8"/>
+          </marker>
+          <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#2563EB"/>
+          </marker>
+        </defs>
+        <!-- Axes -->
+        <line x1="40" y1="260" x2="450" y2="260" stroke="#CBD5E1" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <line x1="40" y1="260" x2="40" y2="20" stroke="#CBD5E1" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="455" y="265" fill="#94A3B8" font-size="13" font-family="Outfit">x</text>
+        <text x="30" y="16" fill="#94A3B8" font-size="13" font-family="Outfit">y</text>
+        <!-- Curve: rough parabola shifted -->
+        <path d="M60,240 C120,180 200,80 340,50 C380,42 420,55 440,80" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+        <!-- Point a and x on curve -->
+        <!-- a ≈ x=160, y=120 -->
+        <circle cx="170" cy="118" r="5" fill="#2563EB"/>
+        <line x1="170" y1="260" x2="170" y2="118" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="162" y="278" fill="#475569" font-size="12" font-family="Outfit">a</text>
+        <text x="45" y="122" fill="#475569" font-size="12" font-family="Outfit">f(a)</text>
+        <line x1="40" y1="118" x2="170" y2="118" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- x point ≈ x=310, y=62 -->
+        <circle cx="310" cy="62" r="5" fill="#7C3AED"/>
+        <line x1="310" y1="260" x2="310" y2="62" stroke="#C4B5FD" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="303" y="278" fill="#475569" font-size="12" font-family="Outfit">x</text>
+        <text x="315" y="58" fill="#7C3AED" font-size="12" font-family="Outfit">f(x)</text>
+        <!-- Secant line through (a, f(a)) and (x, f(x)) -->
+        <line x1="60" y1="158" x2="400" y2="18" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <!-- Tangent at a -->
+        <line x1="80" y1="185" x2="310" y2="55" stroke="#2563EB" stroke-width="2" marker-end="url(#arrow-blue)"/>
+        <!-- Labels -->
+        <text x="85" y="155" fill="#F59E0B" font-size="11" font-family="Outfit">Sécante</text>
+        <text x="185" y="40" fill="#2563EB" font-size="11" font-family="Outfit,sans-serif" font-weight="600">Tangente (dérivée)</text>
+        <!-- Brace for Δx -->
+        <line x1="170" y1="240" x2="310" y2="240" stroke="#94A3B8" stroke-width="1"/>
+        <text x="222" y="256" fill="#94A3B8" font-size="11" font-family="Outfit">x − a</text>
+        <!-- Brace for Δy -->
+        <line x1="315" y1="62" x2="315" y2="118" stroke="#94A3B8" stroke-width="1"/>
+        <text x="320" y="95" fill="#94A3B8" font-size="11" font-family="Outfit">f(x)−f(a)</text>
+      </svg>
+      <p class="diagram-caption">La sécante (jaune) a pour pente $\frac{f(x)-f(a)}{x-a}$. Quand $x \to a$, elle devient la tangente (bleue) : c'est la dérivée $f'(a)$.</p>
+    </div>
+
+    <!-- Definition -->
+    <div class="card definition-card">
+      <div class="card-label definition">Définition officielle</div>
+      <p>Soit $f : A \to \mathbb{R}$ et $a$ un point intérieur à $A$. La <strong>dérivée de $f$ en $a$</strong> est :</p>
+      <div class="formula-box">
+        $$f'(a) := \lim_{\substack{x \to a \\ x \neq a}} \frac{f(x) - f(a)}{x - a}$$
+      </div>
+      <p>Si cette limite est <strong>finie</strong>, on dit que $f$ est <strong>dérivable</strong> en $a$. Une limite infinie ne compte pas !</p>
+    </div>
+
+    <div class="card warning-card">
+      <div class="card-label warning">Piège fréquent à l'examen</div>
+      <p>Dérivable $\Rightarrow$ Continue (la réciproque est fausse). Exemple classique : $f(x) = |x|$ est continue en $0$ mais <strong>pas dérivable</strong> en $0$ car les limites à gauche et à droite du taux d'accroissement valent respectivement $-1$ et $+1$.</p>
+    </div>
+
+    <!-- Worked example: by definition -->
+    <div class="card example-card">
+      <div class="card-label example">Exemple détaillé — Exercice 4.2 c)</div>
+      <p>Calculer par la définition la dérivée de $f(x) = \dfrac{1}{2x+1}$.</p>
+
+      <div class="redac-note">
+        <strong>Style de rédaction attendu à l'examen :</strong> On écrit explicitement le taux d'accroissement, on simplifie algébriquement, puis on passe à la limite. Pas de raccourci non justifié.
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p><strong>On écrit le taux d'accroissement :</strong></p>
+            <p>$$\frac{f(x)-f(a)}{x-a} = \frac{\dfrac{1}{2x+1} - \dfrac{1}{2a+1}}{x-a}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p><strong>On met les fractions au même dénominateur :</strong></p>
+            <p>$$= \frac{\dfrac{(2a+1)-(2x+1)}{(2x+1)(2a+1)}}{x-a} = \frac{-2(x-a)}{(x-a)(2x+1)(2a+1)}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p><strong>On simplifie $(x - a)$ (possible car $x \neq a$) :</strong></p>
+            <p>$$= \frac{-2}{(2x+1)(2a+1)}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <p><strong>On passe à la limite $x \to a$ :</strong></p>
+            <p>$$f'(a) = \lim_{x \to a} \frac{-2}{(2x+1)(2a+1)} = \frac{-2}{(2a+1)^2}$$</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-box">
+        <p>$$f'(x) = -\frac{2}{(2x+1)^2}, \quad x \neq -\tfrac{1}{2}$$</p>
+      </div>
+    </div>
+
+    <!-- Quiz 1 -->
+    <div class="quiz-block" id="quiz-s1">
+      <div class="quiz-title">Exercice interactif</div>
+      <p class="quiz-question">Par la définition, on calcule $f'(a)$ pour $f(x) = \sqrt{x}$. Quel est le résultat ?</p>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:12px;font-family:var(--sans);">Astuce : multipliez numérateur et dénominateur par $\sqrt{x}+\sqrt{a}$.</p>
+
+      <div class="qcm-options">
+        <div class="qcm-opt" onclick="checkQCM(this,'s1','wrong')">
+          <span class="qcm-opt-letter">A</span>
+          <span>$f'(a) = \sqrt{a}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s1','correct')">
+          <span class="qcm-opt-letter">B</span>
+          <span>$f'(a) = \dfrac{1}{2\sqrt{a}}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s1','wrong')">
+          <span class="qcm-opt-letter">C</span>
+          <span>$f'(a) = \dfrac{1}{\sqrt{a}}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s1','wrong')">
+          <span class="qcm-opt-letter">D</span>
+          <span>$f'(a) = 2\sqrt{a}$</span>
+        </div>
+      </div>
+
+      <div class="feedback" id="fb-s1"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       SECTION 2 — Règles de dérivation
+  ══════════════════════════════════ -->
+  <section class="section" id="s2">
+    <div class="section-badge">Section 2</div>
+    <h2 class="section-title">Règles de dérivation</h2>
+    <p class="section-intro">
+      Plutôt que de repasser par la définition à chaque fois, on utilise des règles algébriques.
+    </p>
+
+    <div class="card intuition-card">
+      <div class="card-label intuition">Intuition</div>
+      <p>Ces règles découlent toutes de la définition par limite. En pratique, tu les appliques mécaniquement — mais comprends leur logique pour ne pas les mélanger.</p>
+    </div>
+
+    <div class="card definition-card">
+      <div class="card-label definition">Les quatre règles fondamentales</div>
+      <p>Soient $f$ et $g$ dérivables en $a$, $c \in \mathbb{R}$ :</p>
+
+      <div class="col-2">
+        <div>
+          <h4>1. Constante multiplicative</h4>
+          <div class="formula-box">$(cf)' = c \cdot f'$</div>
+        </div>
+        <div>
+          <h4>2. Somme</h4>
+          <div class="formula-box">$(f+g)' = f' + g'$</div>
+        </div>
+        <div>
+          <h4>3. Produit (Leibniz)</h4>
+          <div class="formula-box">$(fg)' = f'g + fg'$</div>
+        </div>
+        <div>
+          <h4>4. Quotient ($g(a)\neq 0$)</h4>
+          <div class="formula-box">$$\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$$</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <h4>5. Composition (règle de la chaîne)</h4>
+      <p>Si $f$ dérivable en $a$ et $g$ dérivable en $f(a)$ :</p>
+      <div class="formula-box">$$(g \circ f)'(a) = g'(f(a)) \cdot f'(a)$$</div>
+      <p style="font-size:14px;color:var(--text-muted);">En Leibniz : $\dfrac{d}{dx}[g(f(x))] = g'(f(x)) \cdot f'(x)$ — dérivée de l'extérieur, fois dérivée de l'intérieur.</p>
+    </div>
+
+    <!-- Worked example: product + chain -->
+    <div class="card example-card">
+      <div class="card-label example">Exemple — Règle du produit</div>
+      <p>Calculer la dérivée de $h(x) = x^2 \cdot e^x$.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p>On pose $f(x) = x^2$ et $g(x) = e^x$, donc $f'(x) = 2x$ et $g'(x) = e^x$.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p>Règle du produit : $h'(x) = f'(x)g(x) + f(x)g'(x) = 2x \cdot e^x + x^2 \cdot e^x$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p>On factorise : $h'(x) = e^x(2x + x^2) = x(x+2)e^x$</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-box">$$h'(x) = x(x+2)e^x$$</div>
+    </div>
+
+    <div class="card example-card">
+      <div class="card-label example">Exemple — Règle de la chaîne</div>
+      <p>Calculer la dérivée de $k(x) = \sin(x^2 + 1)$.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p>Fonction extérieure : $g(u) = \sin(u)$, fonction intérieure : $f(x) = x^2 + 1$.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p>$g'(u) = \cos(u)$ et $f'(x) = 2x$.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p>$k'(x) = \cos(f(x)) \cdot f'(x) = \cos(x^2+1) \cdot 2x$</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-box">$$k'(x) = 2x\cos(x^2+1)$$</div>
+    </div>
+
+    <!-- Quiz 2: QCM -->
+    <div class="quiz-block" id="quiz-s2">
+      <div class="quiz-title">Exercice interactif</div>
+      <p class="quiz-question">Quelle est la dérivée de $\dfrac{e^x}{x}$ (pour $x \neq 0$) ?</p>
+      <div class="qcm-options">
+        <div class="qcm-opt" onclick="checkQCM(this,'s2','wrong')">
+          <span class="qcm-opt-letter">A</span>
+          <span>$\dfrac{e^x}{x^2}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s2','correct')">
+          <span class="qcm-opt-letter">B</span>
+          <span>$\dfrac{e^x(x-1)}{x^2}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s2','wrong')">
+          <span class="qcm-opt-letter">C</span>
+          <span>$e^x \cdot \dfrac{1}{x}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s2','wrong')">
+          <span class="qcm-opt-letter">D</span>
+          <span>$\dfrac{e^x(x+1)}{x^2}$</span>
+        </div>
+      </div>
+      <div class="feedback" id="fb-s2"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       SECTION 3 — Tableau des dérivées
+  ══════════════════════════════════ -->
+  <section class="section" id="s3">
+    <div class="section-badge">Section 3</div>
+    <h2 class="section-title">Dérivées usuelles</h2>
+    <p class="section-intro">Ce tableau est à mémoriser. À l'examen, tu ne peux pas avoir de formulaire.</p>
+
+    <div class="card">
+      <table class="deriv-table">
+        <thead>
+          <tr>
+            <th>$f(x)$</th>
+            <th>$f'(x)$</th>
+            <th>Domaine</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>$c$ (constante)</td><td>$0$</td><td>$\mathbb{R}$</td></tr>
+          <tr><td>$x^n$ ($n \in \mathbb{R}$)</td><td>$nx^{n-1}$</td><td>selon $n$</td></tr>
+          <tr><td>$e^x$</td><td>$e^x$</td><td>$\mathbb{R}$</td></tr>
+          <tr><td>$\ln x$</td><td>$\dfrac{1}{x}$</td><td>$x > 0$</td></tr>
+          <tr><td>$a^x$ ($a > 0, a \neq 1$)</td><td>$a^x \ln a$</td><td>$\mathbb{R}$</td></tr>
+          <tr><td>$\log_a x$</td><td>$\dfrac{1}{x \ln a}$</td><td>$x > 0$</td></tr>
+          <tr><td>$\sin x$</td><td>$\cos x$</td><td>$\mathbb{R}$</td></tr>
+          <tr><td>$\cos x$</td><td>$-\sin x$</td><td>$\mathbb{R}$</td></tr>
+          <tr><td>$\tan x$</td><td>$\dfrac{1}{\cos^2 x} = 1 + \tan^2 x$</td><td>$x \neq \frac{\pi}{2}+k\pi$</td></tr>
+          <tr><td>$\arcsin x$</td><td>$\dfrac{1}{\sqrt{1-x^2}}$</td><td>$|x| < 1$</td></tr>
+          <tr><td>$\arccos x$</td><td>$-\dfrac{1}{\sqrt{1-x^2}}$</td><td>$|x| < 1$</td></tr>
+          <tr><td>$\arctan x$</td><td>$\dfrac{1}{1+x^2}$</td><td>$\mathbb{R}$</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card warning-card">
+      <div class="card-label warning">Erreurs fréquentes</div>
+      <ul>
+        <li>$(e^{2x})' = 2e^{2x}$, pas $e^{2x}$ (règle de la chaîne !)</li>
+        <li>$(\ln(x^2))' = \frac{2x}{x^2} = \frac{2}{x}$, pas $\frac{1}{x^2}$</li>
+        <li>$(\cos x)' = -\sin x$ — le signe moins, toujours.</li>
+      </ul>
+    </div>
+
+    <!-- Quiz 3: flashcard-style input -->
+    <div class="quiz-block" id="quiz-s3">
+      <div class="quiz-title">Exercice interactif — Flashcard dérivées</div>
+      <p class="quiz-question">Quelle est la dérivée de $f(x) = x^3 \ln x$ ?</p>
+      <p style="font-size:13px;color:var(--text-muted);font-family:var(--sans);margin-bottom:10px;">Utilise la règle du produit avec $u=x^3$ et $v=\ln x$.</p>
+
+      <div class="qcm-options">
+        <div class="qcm-opt" onclick="checkQCM(this,'s3','wrong')">
+          <span class="qcm-opt-letter">A</span>
+          <span>$3x^2 \cdot \dfrac{1}{x} = 3x$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s3','correct')">
+          <span class="qcm-opt-letter">B</span>
+          <span>$x^2(3\ln x + 1)$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s3','wrong')">
+          <span class="qcm-opt-letter">C</span>
+          <span>$3x^2 \ln x$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s3','wrong')">
+          <span class="qcm-opt-letter">D</span>
+          <span>$3x^2 + x^2$</span>
+        </div>
+      </div>
+      <div class="feedback" id="fb-s3"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       SECTION 4 — Rolle & TAF
+  ══════════════════════════════════ -->
+  <section class="section" id="s4">
+    <div class="section-badge">Section 4</div>
+    <h2 class="section-title">Théorème de Rolle &amp; Théorème des accroissements finis</h2>
+    <p class="section-intro">
+      Ces deux théorèmes relient le comportement global d'une fonction à ses valeurs locales de dérivée. Ils servent à justifier des inégalités et à trouver des valeurs précises.
+    </p>
+
+    <!-- Rolle -->
+    <div class="card definition-card">
+      <div class="card-label definition">Théorème de Rolle</div>
+      <p>Si $f$ est <strong>continue</strong> sur $[a,b]$, <strong>dérivable</strong> sur $]a,b[$, et $f(a) = f(b)$, alors :</p>
+      <div class="formula-box">$$\exists\, c \in\, ]a,b[ \;\text{ tel que }\; f'(c) = 0$$</div>
+      <p style="font-size:14px;color:var(--text-muted);">En clair : une fonction qui repart au même niveau qu'elle est partie possède forcément un "sommet" ou un "creux" quelque part.</p>
+    </div>
+
+    <!-- SVG Rolle -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg" style="max-width:420px; border-radius:10px; background:#fff; border:1px solid #E2E8F0;">
+        <line x1="30" y1="190" x2="400" y2="190" stroke="#CBD5E1" stroke-width="1.5"/>
+        <line x1="30" y1="190" x2="30" y2="15" stroke="#CBD5E1" stroke-width="1.5"/>
+        <!-- Curve: goes from (70,140) up to (210,50) down to (360,140) -->
+        <path d="M70,140 C120,50 160,30 210,30 C260,30 310,80 360,140" stroke="#2563EB" stroke-width="2.5" fill="none"/>
+        <!-- f(a)=f(b) horizontal -->
+        <line x1="30" y1="140" x2="370" y2="140" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="4,3"/>
+        <!-- Points a, b, c -->
+        <circle cx="70" cy="140" r="5" fill="#059669"/>
+        <circle cx="360" cy="140" r="5" fill="#059669"/>
+        <circle cx="210" cy="30" r="5" fill="#DC2626"/>
+        <!-- Vertical dashes -->
+        <line x1="70" y1="190" x2="70" y2="140" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="360" y1="190" x2="360" y2="140" stroke="#CBD5E1" stroke-width="1" stroke-dasharray="3,3"/>
+        <line x1="210" y1="190" x2="210" y2="30" stroke="#FCA5A5" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- Tangent at c (horizontal) -->
+        <line x1="155" y1="30" x2="270" y2="30" stroke="#DC2626" stroke-width="2"/>
+        <!-- Labels -->
+        <text x="63" y="207" fill="#059669" font-size="12" font-family="Outfit" font-weight="600">a</text>
+        <text x="354" y="207" fill="#059669" font-size="12" font-family="Outfit" font-weight="600">b</text>
+        <text x="204" y="207" fill="#DC2626" font-size="12" font-family="Outfit" font-weight="600">c</text>
+        <text x="272" y="28" fill="#DC2626" font-size="11" font-family="Outfit">f'(c)=0</text>
+        <text x="10" y="144" fill="#475569" font-size="11" font-family="Outfit">f(a)=f(b)</text>
+      </svg>
+      <p class="diagram-caption">Au point $c$, la tangente est horizontale : $f'(c) = 0$.</p>
+    </div>
+
+    <!-- TAF -->
+    <div class="card definition-card">
+      <div class="card-label definition">Théorème des accroissements finis (TAF)</div>
+      <p>Si $f$ est <strong>continue</strong> sur $[a,b]$ et <strong>dérivable</strong> sur $]a,b[$, alors :</p>
+      <div class="formula-box">$$\exists\, c \in\, ]a,b[ \;\text{ tel que }\; f'(c) = \frac{f(b)-f(a)}{b-a}$$</div>
+      <p style="font-size:14px;color:var(--text-muted);">La dérivée en $c$ vaut exactement le taux d'accroissement moyen sur $[a,b]$. Géométriquement : il existe un point où la tangente est parallèle à la sécante.</p>
+    </div>
+
+    <div class="card warning-card">
+      <div class="card-label warning">Pourquoi Rolle peut échouer — Exercice 4.4</div>
+      <p><strong>Exemple :</strong> $f(x) = 3|x| - 9$ sur $]-2, 2[$. On a $f(-2) = f(2) = -3$ — bonne nouvelle. Mais $f$ <strong>n'est pas dérivable</strong> en $x = 0$ (coin anguleux). Donc Rolle ne s'applique pas, et en effet $f'(x) = \pm 3 \neq 0$ partout où $f$ est dérivable.</p>
+    </div>
+
+    <!-- Quiz 4 -->
+    <div class="quiz-block" id="quiz-s4">
+      <div class="quiz-title">Exercice interactif — Exercice 4.5</div>
+      <p class="quiz-question">
+        Soit $f(x) = \begin{cases} 3 - \dfrac{x^2}{2} & x \leq 1 \\ \dfrac{1}{x} & x > 1 \end{cases}$ sur $[0,2]$.
+        Le TAF garantit l'existence de $c \in ]0,2[$ tel que $f'(c) = \dfrac{f(2)-f(0)}{2-0}$.
+        Quelle est la valeur de ce taux ?
+      </p>
+      <div class="qcm-options">
+        <div class="qcm-opt" onclick="checkQCM(this,'s4','wrong')">
+          <span class="qcm-opt-letter">A</span>
+          <span>$-1$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s4','wrong')">
+          <span class="qcm-opt-letter">B</span>
+          <span>$0$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s4','correct')">
+          <span class="qcm-opt-letter">C</span>
+          <span>$-\dfrac{5}{4}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s4','wrong')">
+          <span class="qcm-opt-letter">D</span>
+          <span>$\dfrac{1}{2}$</span>
+        </div>
+      </div>
+      <span class="hint-toggle" onclick="toggleHint('h4')">Voir le calcul</span>
+      <div class="hint-content" id="h4">
+        $f(0) = 3 - 0 = 3$ et $f(2) = \frac{1}{2}$. Donc $\frac{f(2)-f(0)}{2-0} = \frac{\frac{1}{2}-3}{2} = \frac{-5/2}{2} = -\frac{5}{4}$.
+      </div>
+      <div class="feedback" id="fb-s4"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       SECTION 5 — L'Hôpital
+  ══════════════════════════════════ -->
+  <section class="section" id="s5">
+    <div class="section-badge">Section 5</div>
+    <h2 class="section-title">Règle de L'Hôpital</h2>
+    <p class="section-intro">
+      Pour lever une forme indéterminée $\frac{0}{0}$ ou $\frac{\infty}{\infty}$ : on dérive numérateur et dénominateur séparément.
+    </p>
+
+    <div class="card intuition-card">
+      <div class="card-label intuition">Intuition</div>
+      <p>Si $f$ et $g$ tendent toutes les deux vers $0$, leur rapport dépend de <em>à quelle vitesse</em> chacune tend vers $0$ — et ça, c'est exactement ce que mesurent leurs dérivées.</p>
+    </div>
+
+    <div class="card definition-card">
+      <div class="card-label definition">Théorème</div>
+      <p>Si $\displaystyle\lim_{x\to a} f(x) = \lim_{x\to a} g(x) = 0$ ou $\pm\infty$, et si $\displaystyle\lim_{x\to a}\frac{f'(x)}{g'(x)}$ existe, alors :</p>
+      <div class="formula-box">$$\lim_{x\to a}\frac{f(x)}{g(x)} = \lim_{x\to a}\frac{f'(x)}{g'(x)}$$</div>
+      <p style="font-size:14px;color:var(--text-muted);">On peut appliquer L'Hôpital plusieurs fois de suite si la forme reste indéterminée.</p>
+    </div>
+
+    <div class="card warning-card">
+      <div class="card-label warning">Condition obligatoire à vérifier</div>
+      <p>Avant d'appliquer L'Hôpital, il faut <strong>toujours vérifier</strong> qu'on est bien en forme $\frac{0}{0}$ ou $\frac{\infty}{\infty}$. Appliquer la règle sans vérifier est une erreur de rédaction qui coûte des points.</p>
+    </div>
+
+    <!-- Worked examples -->
+    <div class="card example-card">
+      <div class="card-label example">Exemple 1 — Exercice 4.15 a)</div>
+      <p>Calculer $\displaystyle\lim_{x \to 0} \frac{e^x - 1}{x}$.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p><strong>Forme indéterminée :</strong> En $x=0$, $e^0 - 1 = 0$ et $x = 0$. On est en $\frac{0}{0}$. ✓ L'Hôpital s'applique.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p><strong>On dérive numérateur et dénominateur :</strong> $(e^x - 1)' = e^x$ et $(x)' = 1$.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p>$$\lim_{x \to 0} \frac{e^x - 1}{x} \overset{H}{=} \lim_{x \to 0} \frac{e^x}{1} = e^0 = 1$$</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-box">$$\lim_{x \to 0} \frac{e^x - 1}{x} = 1$$</div>
+    </div>
+
+    <div class="card example-card">
+      <div class="card-label example">Exemple 2 — Exercice 4.15 d)</div>
+      <p>Calculer $\displaystyle\lim_{x \to 0} \frac{x - \tan x}{x^3}$.</p>
+
+      <div class="redac-note">
+        <strong>Style de rédaction :</strong> À l'examen, on note $\overset{H}{=}$ pour indiquer qu'on applique L'Hôpital, et on justifie la forme indéterminée à chaque étape.
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p>En $x=0$ : $0 - 0 = 0$ au numérateur, $0$ au dénominateur. Forme $\frac{0}{0}$ ✓.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p>$(x - \tan x)' = 1 - \frac{1}{\cos^2 x}$ et $(x^3)' = 3x^2$. En $x=0$ : $1-1=0$ et $0$. Forme $\frac{0}{0}$ encore ✓.</p>
+            <p>$$\overset{H}{=} \lim_{x\to 0} \frac{1 - \frac{1}{\cos^2 x}}{3x^2}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p>Deuxième application : $\left(1 - \cos^{-2}x\right)' = -2\cos^{-3}x \cdot (-\sin x) = \frac{2\sin x}{\cos^3 x}$ et $(3x^2)' = 6x$. En $x=0$ : forme $\frac{0}{0}$ encore ✓.</p>
+            <p>$$\overset{H}{=} \lim_{x\to 0} \frac{\frac{2\sin x}{\cos^3 x}}{6x}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <p>Troisième application : numérateur $\to \frac{d}{dx}\left[\frac{2\sin x}{\cos^3 x}\right]$. On reconnaît que $\lim_{x\to 0}\frac{\sin x}{x} = 1$, donc :</p>
+            <p>$$\lim_{x\to 0} \frac{2\sin x}{6x\cos^3 x} = \frac{2}{6} \cdot \lim_{x\to0}\frac{\sin x}{x} \cdot \frac{1}{\cos^3 x} = \frac{1}{3} \cdot 1 \cdot 1 = -\frac{1}{6}$$</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-box">$$\lim_{x \to 0} \frac{x - \tan x}{x^3} = -\frac{1}{6}$$</div>
+    </div>
+
+    <div class="card example-card">
+      <div class="card-label example">Exemple 3 — Forme $0 \cdot \infty$ (Exercice 4.15 g)</div>
+      <p>Calculer $\displaystyle\lim_{x \to 0^+} x^x$.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p>Forme $0^0$ — indéterminée. On pose $L = \lim x^x$ et on prend le logarithme :</p>
+            <p>$$\ln L = \lim_{x \to 0^+} x \ln x = \lim_{x\to 0^+} \frac{\ln x}{1/x}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p>Forme $\frac{-\infty}{+\infty}$ ✓. Application de L'Hôpital :</p>
+            <p>$$\overset{H}{=} \lim_{x\to 0^+} \frac{1/x}{-1/x^2} = \lim_{x\to 0^+}(-x) = 0$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><p>Donc $\ln L = 0$, d'où $L = e^0 = 1$.</p></div>
+        </div>
+      </div>
+      <div class="result-box">$$\lim_{x \to 0^+} x^x = 1$$</div>
+    </div>
+
+    <!-- Quiz 5 -->
+    <div class="quiz-block" id="quiz-s5">
+      <div class="quiz-title">Exercice interactif — 4.15 c)</div>
+      <p class="quiz-question">En utilisant L'Hôpital, calculer $\displaystyle\lim_{x \to 0} \frac{1 - \cos x}{x^2}$.</p>
+      <div class="qcm-options">
+        <div class="qcm-opt" onclick="checkQCM(this,'s5','wrong')">
+          <span class="qcm-opt-letter">A</span>
+          <span>$0$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s5','wrong')">
+          <span class="qcm-opt-letter">B</span>
+          <span>$1$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s5','correct')">
+          <span class="qcm-opt-letter">C</span>
+          <span>$\dfrac{1}{2}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s5','wrong')">
+          <span class="qcm-opt-letter">D</span>
+          <span>$-\dfrac{1}{2}$</span>
+        </div>
+      </div>
+      <span class="hint-toggle" onclick="toggleHint('h5')">Voir le calcul</span>
+      <div class="hint-content" id="h5">
+        Forme $\frac{0}{0}$ ✓. $\overset{H}{=} \lim_{x\to0}\frac{\sin x}{2x}$. Forme $\frac{0}{0}$ encore ✓. $\overset{H}{=} \lim_{x\to0}\frac{\cos x}{2} = \frac{1}{2}$.
+      </div>
+      <div class="feedback" id="fb-s5"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       SECTION 6 — Polynômes de Taylor
+  ══════════════════════════════════ -->
+  <section class="section" id="s6">
+    <div class="section-badge">Section 6</div>
+    <h2 class="section-title">Polynômes de Taylor</h2>
+    <p class="section-intro">
+      Un polynôme de Taylor approche une fonction compliquée par un polynôme simple. Plus l'ordre est élevé, plus l'approximation est bonne près du point $a$.
+    </p>
+
+    <div class="card intuition-card">
+      <div class="card-label intuition">Intuition</div>
+      <p>$f(x) \approx f(a) + f'(a)(x-a)$ est la droite tangente (ordre 1). Le polynôme de Taylor d'ordre $n$ rajoute des corrections de plus en plus fines en utilisant $f'', f''', \ldots$</p>
+    </div>
+
+    <div class="card definition-card">
+      <div class="card-label definition">Définition</div>
+      <p>Le <strong>polynôme de Taylor d'ordre $n$ de $f$ en $a$</strong> est :</p>
+      <div class="formula-box">
+        $$T_{f,a,n}(x) = \sum_{k=0}^{n} \frac{f^{(k)}(a)}{k!}(x-a)^k$$
+      </div>
+      <p style="font-size:14px;color:var(--text-muted);">Développé : $f(a) + f'(a)(x-a) + \dfrac{f''(a)}{2!}(x-a)^2 + \cdots + \dfrac{f^{(n)}(a)}{n!}(x-a)^n$</p>
+      <p style="font-size:14px;color:var(--text-muted);">Quand $a = 0$, on parle de <strong>développement de MacLaurin</strong>.</p>
+    </div>
+
+    <h3>MacLaurin des fonctions classiques (à mémoriser)</h3>
+
+    <div class="card">
+      <div class="col-2">
+        <div>
+          <h4>$e^x$ (MacLaurin)</h4>
+          <div class="formula-box">$$e^x = \sum_{k=0}^{n}\frac{x^k}{k!} + o(x^n)$$</div>
+          <p style="font-size:13px;color:var(--text-muted);">$= 1 + x + \frac{x^2}{2} + \frac{x^3}{6} + \cdots$</p>
+        </div>
+        <div>
+          <h4>$\sin x$ (MacLaurin)</h4>
+          <div class="formula-box">$$\sin x = x - \frac{x^3}{6} + \frac{x^5}{120} - \cdots$$</div>
+          <p style="font-size:13px;color:var(--text-muted);">Uniquement des puissances impaires.</p>
+        </div>
+        <div>
+          <h4>$\cos x$ (MacLaurin)</h4>
+          <div class="formula-box">$$\cos x = 1 - \frac{x^2}{2} + \frac{x^4}{24} - \cdots$$</div>
+          <p style="font-size:13px;color:var(--text-muted);">Uniquement des puissances paires.</p>
+        </div>
+        <div>
+          <h4>$\ln(1+x)$ (MacLaurin)</h4>
+          <div class="formula-box">$$\ln(1+x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \cdots$$</div>
+          <p style="font-size:13px;color:var(--text-muted);">Valide pour $|x| \leq 1$ (sauf $x=-1$).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Worked example: Taylor of f(x) = sqrt(x) around a=1 (exam Q8!) -->
+    <div class="card example-card">
+      <div class="card-label example">Exemple clé — Exercice 4.19 style <span class="exam-tag">Examen Jan 2026 Q8</span></div>
+      <p>Construire $T_{f,1,3}(x)$ pour $f(x) = \sqrt{x}$, puis approximer $\sqrt{2}$.</p>
+
+      <div class="redac-note">
+        <strong>Méthode imposée à l'examen :</strong> calculer $f(a)$, $f'(a)$, $f''(a)$, $f'''(a)$, puis substituer dans la formule. Bien écrire chaque dérivée avant d'évaluer en $a$.
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p><strong>Dérivées successives de $f(x) = x^{1/2}$ :</strong></p>
+            <p>$f'(x) = \frac{1}{2}x^{-1/2}$</p>
+            <p>$f''(x) = -\frac{1}{4}x^{-3/2}$</p>
+            <p>$f'''(x) = \frac{3}{8}x^{-5/2}$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p><strong>Évaluation en $a = 1$ :</strong></p>
+            <p>$f(1) = 1$, $\quad f'(1) = \frac{1}{2}$, $\quad f''(1) = -\frac{1}{4}$, $\quad f'''(1) = \frac{3}{8}$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p><strong>Construction du polynôme :</strong></p>
+            <p>
+              $$T_{f,1,3}(x) = 1 + \frac{1}{2}(x-1) - \frac{1}{4}\cdot\frac{(x-1)^2}{2} + \frac{3}{8}\cdot\frac{(x-1)^3}{6}$$
+            </p>
+            <p>$$= 1 + \frac{x-1}{2} - \frac{(x-1)^2}{8} + \frac{(x-1)^3}{16}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <p><strong>Approximation de $\sqrt{2}$ : on pose $x = 2$ :</strong></p>
+            <p>$$T_{f,1,3}(2) = 1 + \frac{1}{2} - \frac{1}{8} + \frac{1}{16} = \frac{16+8-2+1}{16} = \frac{23}{16}$$</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-box">
+        <p>$$\sqrt{2} \approx \frac{23}{16} = 1{,}4375 \quad\text{(valeur exacte : }1{,}41421\ldots\text{)}$$</p>
+        <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Erreur : $\frac{23}{16} - \sqrt{2} \approx 0{,}023$ — raisonnable pour un ordre 3.</p>
+      </div>
+    </div>
+
+    <!-- Quiz 6 -->
+    <div class="quiz-block" id="quiz-s6">
+      <div class="quiz-title">Exercice interactif</div>
+      <p class="quiz-question">Quel est le polynôme de MacLaurin d'ordre 3 de $e^{-x^2/2}$ ? <br><small style="font-family:var(--sans);color:var(--text-muted);">Astuce : substituez $u = -x^2/2$ dans le MacLaurin de $e^u$.</small></p>
+      <div class="qcm-options">
+        <div class="qcm-opt" onclick="checkQCM(this,'s6','wrong')">
+          <span class="qcm-opt-letter">A</span>
+          <span>$1 - x^2 + x^4$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s6','correct')">
+          <span class="qcm-opt-letter">B</span>
+          <span>$1 - \dfrac{x^2}{2} + \dfrac{x^4}{8}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s6','wrong')">
+          <span class="qcm-opt-letter">C</span>
+          <span>$1 - x^2 + \dfrac{x^4}{2}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s6','wrong')">
+          <span class="qcm-opt-letter">D</span>
+          <span>$1 + x^2 - \dfrac{x^4}{2}$</span>
+        </div>
+      </div>
+      <span class="hint-toggle" onclick="toggleHint('h6')">Voir le calcul</span>
+      <div class="hint-content" id="h6">
+        $e^u \approx 1 + u + \frac{u^2}{2}$ avec $u = -\frac{x^2}{2}$ : $1 + (-\frac{x^2}{2}) + \frac{(-\frac{x^2}{2})^2}{2} = 1 - \frac{x^2}{2} + \frac{x^4/4}{2} = 1 - \frac{x^2}{2} + \frac{x^4}{8}$.
+      </div>
+      <div class="feedback" id="fb-s6"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       SECTION 7 — Approximations numériques
+  ══════════════════════════════════ -->
+  <section class="section" id="s7">
+    <div class="section-badge">Section 7</div>
+    <h2 class="section-title">Approximations numériques — Exercices types examen</h2>
+    <p class="section-intro">
+      Ces exercices sont directement calqués sur ceux de l'examen de janvier 2026 et des exercices 4.19 – 4.23 du cours.
+    </p>
+
+    <div class="card method-card">
+      <div class="card-label method">Méthode générale</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">Identifier la fonction $f$ et le point $a$ <em>proche</em> de la valeur à approximer.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">Calculer $f(a), f'(a), f''(a), \ldots, f^{(n)}(a)$. Écrire chaque dérivée avant d'évaluer.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">Construire $T_{f,a,n}(x)$ avec la formule somme.</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">Substituer la valeur numérique et simplifier.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example: sqrt(4.02) -->
+    <div class="card example-card">
+      <div class="card-label example">Exemple — Exercice 4.22 : approximer $\sqrt{4{,}02}$</div>
+      <p>On veut approximer $\sqrt{4{,}02}$ au premier ordre (MacLaurin de $g(x) = \sqrt{4+x}$ autour de $x=0$).</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p>$g(x) = \sqrt{4+x} = (4+x)^{1/2}$, $a = 0$, valeur cible $x = 0{,}02$.</p>
+            <p>$g(0) = 2$, $\quad g'(x) = \frac{1}{2}(4+x)^{-1/2} \Rightarrow g'(0) = \frac{1}{4}$</p>
+            <p>$g''(x) = -\frac{1}{4}(4+x)^{-3/2} \Rightarrow g''(0) = -\frac{1}{32}$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p>Polynôme au deuxième ordre :</p>
+            <p>$$T_{g,0,2}(x) = 2 + \frac{x}{4} - \frac{x^2}{64}$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p>On substitue $x = 0{,}02$ :</p>
+            <p>$$\sqrt{4{,}02} \approx 2 + \frac{0{,}02}{4} - \frac{(0{,}02)^2}{64} = 2 + 0{,}005 - 0{,}00000625 \approx 2{,}00499$$</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-box">$$\sqrt{4{,}02} \approx 2{,}005 \quad\text{(valeur exacte : }2{,}00499\ldots\text{)}$$</div>
+    </div>
+
+    <!-- Example: sin(32°) -->
+    <div class="card example-card">
+      <div class="card-label example">Exemple — Exercice 4.20 : approximer $\sin 32°$</div>
+      <p>On développe $\sin x$ autour de $a = \pi/6$ (car $30° = \pi/6$ est proche de $32°$).</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p>Conversion : $32° = \frac{32\pi}{180} = \frac{8\pi}{45}$. On pose $h = 32° - 30° = 2° = \frac{\pi}{90}$.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p>$f(x) = \sin x$, $a = \pi/6$. Dérivées : $f'=\cos x$, $f''=-\sin x$.</p>
+            <p>Évaluation : $f(\pi/6) = 1/2$, $f'(\pi/6) = \sqrt{3}/2$, $f''(\pi/6) = -1/2$.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p>$T_{f,\pi/6,2}(x) = \frac{1}{2} + \frac{\sqrt{3}}{2}(x-\frac{\pi}{6}) - \frac{1}{4}(x-\frac{\pi}{6})^2$</p>
+            <p>À $x = \pi/6 + \pi/90$, avec $h = \pi/90$ :</p>
+            <p>$$\sin 32° \approx \frac{1}{2} + \frac{\sqrt{3}}{2}\cdot\frac{\pi}{90} - \frac{1}{4}\cdot\left(\frac{\pi}{90}\right)^2$$</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <p>Numériquement ($\sqrt{3} \approx 1{,}732$, $\pi/90 \approx 0{,}0349$) :</p>
+            <p>$$\approx 0{,}5 + 0{,}866 \times 0{,}0349 - 0{,}25 \times 0{,}00122 \approx 0{,}5 + 0{,}03023 - 0{,}000305 \approx 0{,}5299$$</p>
+          </div>
+        </div>
+      </div>
+      <div class="result-box">$$\sin 32° \approx 0{,}530 \quad\text{(valeur exacte : }0{,}5299\ldots\text{)}$$</div>
+    </div>
+
+    <!-- Big final quiz: interactive step-by-step Taylor -->
+    <div class="quiz-block" id="quiz-s7">
+      <div class="quiz-title">Exercice guidé — Niveau examen</div>
+      <p class="quiz-question">
+        On veut approximer $\sqrt[3]{29}$ avec un polynôme de Taylor d'ordre 1 de $f(x) = \sqrt[3]{x}$ autour de $a = 27$.
+        <br><small style="font-family:var(--sans);">Étape par étape.</small>
+      </p>
+
+      <div id="step-q-1" style="margin-bottom:16px;">
+        <p style="font-family:var(--sans);font-size:14px;margin-bottom:8px;"><strong>Étape 1 :</strong> Que vaut $f'(x)$ pour $f(x) = x^{1/3}$ ?</p>
+        <div class="qcm-options" id="step1opts">
+          <div class="qcm-opt" onclick="checkStep(this,1,'wrong')">
+            <span class="qcm-opt-letter">A</span>
+            <span>$\frac{1}{3}x^{2/3}$</span>
+          </div>
+          <div class="qcm-opt" onclick="checkStep(this,1,'correct')">
+            <span class="qcm-opt-letter">B</span>
+            <span>$\frac{1}{3}x^{-2/3}$</span>
+          </div>
+          <div class="qcm-opt" onclick="checkStep(this,1,'wrong')">
+            <span class="qcm-opt-letter">C</span>
+            <span>$3x^{2/3}$</span>
+          </div>
+        </div>
+        <div class="feedback" id="fb-step1"></div>
+      </div>
+
+      <div id="step-q-2" style="margin-bottom:16px; opacity:0.35; pointer-events:none;" >
+        <p style="font-family:var(--sans);font-size:14px;margin-bottom:8px;"><strong>Étape 2 :</strong> Que vaut $f'(27)$ ?</p>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="checkStep(this,2,'wrong')">
+            <span class="qcm-opt-letter">A</span>
+            <span>$3$</span>
+          </div>
+          <div class="qcm-opt" onclick="checkStep(this,2,'correct')">
+            <span class="qcm-opt-letter">B</span>
+            <span>$\frac{1}{27}$</span>
+          </div>
+          <div class="qcm-opt" onclick="checkStep(this,2,'wrong')">
+            <span class="qcm-opt-letter">C</span>
+            <span>$\frac{1}{9}$</span>
+          </div>
+        </div>
+        <div class="feedback" id="fb-step2"></div>
+      </div>
+
+      <div id="step-q-3" style="margin-bottom:16px; opacity:0.35; pointer-events:none;">
+        <p style="font-family:var(--sans);font-size:14px;margin-bottom:8px;"><strong>Étape 3 :</strong> $T_{f,27,1}(x) = f(27) + f'(27)(x-27)$. Évalué en $x=29$, quelle est l'approximation de $\sqrt[3]{29}$ ?</p>
+        <div class="qcm-options">
+          <div class="qcm-opt" onclick="checkStep(this,3,'wrong')">
+            <span class="qcm-opt-letter">A</span>
+            <span>$3 + \frac{2}{27} \approx 3{,}074$</span>
+          </div>
+          <div class="qcm-opt" onclick="checkStep(this,3,'correct')">
+            <span class="qcm-opt-letter">B</span>
+            <span>$3 + \frac{2}{27} = \frac{83}{27} \approx 3{,}074$</span>
+          </div>
+          <div class="qcm-opt" onclick="checkStep(this,3,'wrong')">
+            <span class="qcm-opt-letter">C</span>
+            <span>$3 + \frac{1}{9} \approx 3{,}111$</span>
+          </div>
+        </div>
+        <div class="feedback" id="fb-step3"></div>
+      </div>
+
+      <div class="feedback info show" style="margin-top:8px;">
+        <strong>Rappel de méthode :</strong> $f(27) = 27^{1/3} = 3$. $f'(27) = \frac{1}{3} \cdot 27^{-2/3} = \frac{1}{3 \cdot 9} = \frac{1}{27}$. Donc $T_{f,27,1}(29) = 3 + \frac{1}{27} \cdot 2 = 3 + \frac{2}{27} \approx 3{,}074$. Valeur exacte : $\sqrt[3]{29} \approx 3{,}072$.
+      </div>
+    </div>
+
+    <!-- Final summary box -->
+    <div class="card method-card" style="margin-top:32px;">
+      <div class="card-label method">Récapitulatif — Ce que tu dois maîtriser pour l'examen</div>
+      <ul style="font-family:var(--sans);font-size:14px;line-height:1.8;">
+        <li><strong>Définition par limite :</strong> écrire le taux d'accroissement, simplifier, passer à la limite (4.2)</li>
+        <li><strong>Règles :</strong> produit, quotient, chaîne — mécaniquement et sans hésitation</li>
+        <li><strong>L'Hôpital :</strong> vérifier la forme indéterminée, noter $\overset{H}{=}$, itérer si besoin</li>
+        <li><strong>Taylor :</strong> calculer les dérivées successives, évaluer en $a$, construire le polynôme, substituer (exercice Q8 Jan 2026)</li>
+        <li><strong>MacLaurin classiques :</strong> $e^x$, $\sin x$, $\cos x$, $\ln(1+x)$ — à connaître de mémoire</li>
+        <li><strong>Astuce composition :</strong> substituer dans un MacLaurin connu (ex : $e^{-x^2/2}$ depuis $e^u$)</li>
+      </ul>
+    </div>
+  </section>
+
+</div><!-- end #main -->
+
+<script>
+// ─── QCM Logic ───
+const quizDone = {};
+const totalQuizzes = 7;
+
+function checkQCM(el, sectionId, verdict) {
+  if (quizDone['basic-'+sectionId]) return;
+
+  const opts = el.closest('.qcm-options').querySelectorAll('.qcm-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add(verdict);
+
+  const fb = document.getElementById('fb-' + sectionId);
+  fb.classList.add('show');
+
+  const feedbacks = {
+    's1': {
+      correct: 'Exact ! $\\frac{\\sqrt{x}-\\sqrt{a}}{x-a} = \\frac{(\\sqrt{x}-\\sqrt{a})(\\sqrt{x}+\\sqrt{a})}{(x-a)(\\sqrt{x}+\\sqrt{a})} = \\frac{x-a}{(x-a)(\\sqrt{x}+\\sqrt{a})} \\xrightarrow[x\\to a]{} \\frac{1}{2\\sqrt{a}}$',
+      wrong: 'Pas tout à fait. Multiplie le taux d\'accroissement par $\\frac{\\sqrt{x}+\\sqrt{a}}{\\sqrt{x}+\\sqrt{a}}$ pour lever l\'indétermination. La réponse est B : $\\frac{1}{2\\sqrt{a}}$.'
+    },
+    's2': {
+      correct: 'Bravo ! Règle du quotient : $\\left(\\frac{e^x}{x}\\right)\' = \\frac{e^x \\cdot x - e^x \\cdot 1}{x^2} = \\frac{e^x(x-1)}{x^2}$.',
+      wrong: 'Utilise la règle du quotient : $\\left(\\frac{f}{g}\\right)\' = \\frac{f\'g - fg\'}{g^2}$ avec $f=e^x$, $g=x$. La réponse est B.'
+    },
+    's3': {
+      correct: 'Oui ! Règle du produit : $(x^3 \\ln x)\' = 3x^2 \\ln x + x^3 \\cdot \\frac{1}{x} = 3x^2 \\ln x + x^2 = x^2(3\\ln x + 1)$.',
+      wrong: 'N\'oublie pas la règle du produit : $f\'g + fg\'$ avec $f=x^3$, $g=\\ln x$. La réponse est B.'
+    },
+    's4': {
+      correct: 'Correct ! $f(0) = 3$, $f(2) = \\frac{1}{2}$. Le taux moyen vaut $\\frac{\\frac{1}{2}-3}{2} = -\\frac{5}{4}$.',
+      wrong: 'Rappel : $f(0) = 3-0=3$ (branche $x\\leq 1$) et $f(2) = \\frac{1}{2}$ (branche $x>1$). La réponse est C.'
+    },
+    's5': {
+      correct: 'Parfait ! L\'Hôpital deux fois : $\\frac{1-\\cos x}{x^2} \\overset{H}{=} \\frac{\\sin x}{2x} \\overset{H}{=} \\frac{\\cos x}{2} \\to \\frac{1}{2}$.',
+      wrong: 'Applique L\'Hôpital deux fois. $\\frac{(1-\\cos x)\'}{(x^2)\'} = \\frac{\\sin x}{2x}$ — toujours $\\frac{0}{0}$. Puis $\\frac{\\cos x}{2} \\to \\frac{1}{2}$.'
+    },
+    's6': {
+      correct: 'Très bien ! On substitue $u=-x^2/2$ dans $e^u \\approx 1+u+\\frac{u^2}{2}$ : $1 - \\frac{x^2}{2} + \\frac{x^4}{8}$.',
+      wrong: 'Astuce : écris $e^u = 1 + u + \\frac{u^2}{2!}+\\ldots$ avec $u = -\\frac{x^2}{2}$, puis développe. La réponse est B.'
+    }
+  };
+
+  const msg = feedbacks[sectionId] ? feedbacks[sectionId][verdict] : '';
+  fb.className = 'feedback show ' + verdict;
+  fb.innerHTML = msg;
+
+  if (verdict === 'correct') {
+    if (!quizDone['basic-'+sectionId]) {
+      quizDone['basic-'+sectionId] = true;
+      markNavDone(sectionId);
+      updateProgress();
+    }
+  }
+
+  // Re-render KaTeX in feedback
+  setTimeout(() => {
+    renderMathInElement(fb, {
+      delimiters: [{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}],
+      throwOnError: false
+    });
+  }, 50);
+}
+
+// ─── Multi-step quiz (section 7) ───
+let stepsDone = 0;
+
+function checkStep(el, stepNum, verdict) {
+  const fbId = 'fb-step' + stepNum;
+  const fb = document.getElementById(fbId);
+  const opts = el.closest('.qcm-options').querySelectorAll('.qcm-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  el.classList.add(verdict);
+  fb.classList.add('show');
+
+  const msgs = {
+    1: {
+      correct: 'Exact ! $f\'(x) = \\frac{1}{3}x^{1/3-1} = \\frac{1}{3}x^{-2/3}$.',
+      wrong: 'Rappelle-toi : $(x^n)\' = nx^{n-1}$ avec $n=\\frac{1}{3}$. Donc $f\'(x) = \\frac{1}{3}x^{-2/3}$.'
+    },
+    2: {
+      correct: 'Parfait ! $f\'(27) = \\frac{1}{3} \\cdot 27^{-2/3} = \\frac{1}{3} \\cdot \\frac{1}{9} = \\frac{1}{27}$.',
+      wrong: '$27^{1/3} = 3$, donc $27^{2/3} = 9$. Ainsi $f\'(27) = \\frac{1}{3 \\cdot 9} = \\frac{1}{27}$.'
+    },
+    3: {
+      correct: 'Bravo ! $T_{f,27,1}(29) = 3 + \\frac{1}{27}(29-27) = 3 + \\frac{2}{27} \\approx 3{,}074$.',
+      wrong: '$T_{f,27,1}(29) = f(27) + f\'(27)(29-27) = 3 + \\frac{1}{27} \\cdot 2 = 3 + \\frac{2}{27}$. Réponse B.'
+    }
+  };
+
+  fb.className = 'feedback show ' + verdict;
+  fb.innerHTML = msgs[stepNum][verdict];
+
+  if (verdict === 'correct') {
+    stepsDone++;
+    if (stepNum < 3) {
+      const nextStep = document.getElementById('step-q-' + (stepNum + 1));
+      if (nextStep) {
+        nextStep.style.opacity = '1';
+        nextStep.style.pointerEvents = 'auto';
+      }
+    } else if (stepNum === 3 && !quizDone['basic-s7']) {
+      quizDone['basic-s7'] = true;
+      markNavDone('s7');
+      updateProgress();
+    }
+  }
+
+  setTimeout(() => {
+    renderMathInElement(fb, {
+      delimiters: [{left:'$',right:'$',display:false},{left:'$$',right:'$$',display:true}],
+      throwOnError: false
+    });
+  }, 50);
+}
+
+// ─── Hint toggles ───
+function toggleHint(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+
+// ─── Progress ───
+function markNavDone(sectionId) {
+  const num = sectionId.replace('s','');
+  const navLink = document.getElementById('nav-' + num);
+  if (!navLink) return;
+  navLink.classList.add('done');
+  const numSpan = navLink.querySelector('.nav-num');
+  numSpan.innerHTML = '✓';
+}
+
+function updateProgress() {
+  const done = Object.keys(quizDone).length;
+  const pct = Math.round((done / totalQuizzes) * 100);
+  document.getElementById('progress-bar-inner').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = done + ' / ' + totalQuizzes;
+}
+
+// ─── Active nav on scroll ───
+const sections = document.querySelectorAll('section.section');
+const navLinks = document.querySelectorAll('#nav-links li a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      const num = id.replace('s','');
+      navLinks.forEach(l => l.classList.remove('active'));
+      const active = document.getElementById('nav-' + num);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// ─── Initial KaTeX render (fallback) ───
+document.addEventListener('DOMContentLoaded', () => {
+  // auto-render handles it; this is insurance
+});
+</script>
+</body>
+</html>
