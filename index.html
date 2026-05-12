@@ -3,528 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chap 5 — Fonctions Multivariables | MATHF114</title>
+<title>MATHF114 — Cours</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --blue:#0284C7;--blue-l:#E0F2FE;--blue-xl:#F0F9FF;--blue-d:#0369A1;
-  --green:#059669;--green-l:#D1FAE5;--green-d:#065F46;
-  --amber:#D97706;--amber-l:#FEF3C7;--amber-d:#92400E;
-  --red:#DC2626;--red-l:#FEE2E2;--red-d:#7F1D1D;
-  --indigo:#4F46E5;--indigo-l:#E0E7FF;
-  --bg:#F8FAFC;--card:#FFFFFF;--text:#0F172A;--muted:#475569;--lite:#94A3B8;
-  --border:#E2E8F0;--sw:260px;
-  --r:12px;
-}
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;line-height:1.6;}
-
-/* ═══ SIDEBAR ═══ */
-#sb{width:var(--sw);min-height:100vh;background:#0F172A;position:fixed;top:0;left:0;overflow-y:auto;z-index:300;display:flex;flex-direction:column;}
-.sb-head{padding:1.2rem 1rem .8rem;border-bottom:1px solid rgba(255,255,255,.07);}
-.sb-tag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#475569;font-weight:700;}
-.sb-title{font-family:'Fraunces',serif;font-size:15px;color:#F1F5F9;margin-top:3px;line-height:1.3;}
-.sb-prog{padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.07);}
-.prog-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
-.prog-fill{height:3px;background:var(--blue);width:0%;transition:width .6s cubic-bezier(.4,0,.2,1);}
-.prog-txt{font-size:11px;color:#64748B;margin-top:5px;}
-.sb-section{padding:.5rem 1rem .1rem;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#334155;font-weight:700;margin-top:.3rem;}
-.ni{display:flex;align-items:center;gap:9px;padding:7px .9rem;cursor:pointer;font-size:13px;color:#94A3B8;border-left:2px solid transparent;transition:all .12s;}
-.ni:hover{background:rgba(255,255,255,.04);color:#CBD5E1;}
-.ni.on{background:rgba(2,132,199,.15);color:#38BDF8;border-left-color:var(--blue);}
-.ni.done{color:#34D399;}
-.ni.done .nn{color:#10B981;}
-.nn{font-size:10px;font-family:'JetBrains Mono';color:#334155;min-width:22px;flex-shrink:0;}
-.ni.on .nn{color:#7DD3FC;}
-
-/* ═══ MAIN ═══ */
-#main{margin-left:var(--sw);flex:1;padding:2rem 2.5rem 4rem;max-width:min(900px,calc(100vw - var(--sw)));}
-.pg{display:none;}
-.pg.on{display:block;animation:fadeUp .35s ease both;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-/* ═══ PAGE HEADER ═══ */
-.ph{background:var(--card);border-radius:16px;padding:2rem;margin-bottom:1.5rem;border:1px solid var(--border);position:relative;overflow:hidden;}
-.ph::after{content:'';position:absolute;right:-30px;top:-30px;width:130px;height:130px;background:var(--blue-l);border-radius:50%;opacity:.5;pointer-events:none;}
-.ph .chip{display:inline-block;font-family:'JetBrains Mono';font-size:10.5px;background:var(--blue-l);color:var(--blue-d);padding:3px 12px;border-radius:20px;margin-bottom:10px;}
-.ph h2{font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:var(--text);margin-bottom:8px;position:relative;}
-.ph .lead{font-size:14px;color:var(--muted);line-height:1.75;max-width:660px;position:relative;}
-
-/* ═══ CARDS ═══ */
-.c{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.25rem;}
-.c-def{border-left:4px solid var(--blue);}
-.c-thm{border-left:4px solid var(--amber);}
-.c-ex{border-left:4px solid var(--green);}
-.c-warn{border-left:4px solid var(--red);}
-.c-key{background:var(--indigo-l);border:1.5px solid var(--indigo);border-radius:var(--r);}
-.c-prof{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:var(--r);}
-.c-geo{background:#F0FDF4;border:1px solid #BBF7D0;border-radius:var(--r);}
-.badge{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:9px;letter-spacing:.04em;}
-.bd{background:var(--blue-l);color:var(--blue-d);}
-.bt{background:var(--amber-l);color:var(--amber-d);}
-.be{background:var(--green-l);color:var(--green-d);}
-.bw{background:var(--red-l);color:var(--red-d);}
-.bk{background:var(--indigo-l);color:var(--indigo);}
-.bp{background:#DBEAFE;color:#1D4ED8;}
-.c h3{font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:var(--text);margin-bottom:10px;}
-.c p,.c li{font-size:14px;line-height:1.75;color:var(--muted);margin-bottom:5px;}
-.c ul,.c ol{padding-left:1.3rem;margin:6px 0;}
-.c p:last-child{margin-bottom:0;}
-strong,.c strong{color:var(--text);font-weight:700;}
-.mbl{background:#F1F5F9;border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:10px 0;overflow-x:auto;text-align:center;}
-
-/* ═══ STEPS ═══ */
-.steps{list-style:none;padding:0;margin:0;}
-.steps li{display:flex;gap:12px;margin-bottom:14px;}
-.sn{min-width:28px;height:28px;background:var(--blue);color:#fff;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-.sc{flex:1;font-size:14px;line-height:1.7;color:var(--muted);}
-
-/* ═══ QUIZ ═══ */
-.qz{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;margin:1.5rem 0;}
-.qz h4{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
-.qs{font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
-.qo-wrap{display:flex;flex-direction:column;gap:8px;}
-.qo{padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:13.5px;color:var(--text);transition:all .15s;text-align:left;background:var(--card);font-family:'Nunito',sans-serif;width:100%;}
-.qo:not([disabled]):hover{border-color:var(--blue);background:var(--blue-l);}
-.qo.ok{background:var(--green-l);border-color:var(--green);color:var(--green-d);font-weight:600;}
-.qo.no{background:var(--red-l);border-color:var(--red);color:var(--red-d);}
-.qfb{margin-top:10px;padding:9px 14px;border-radius:9px;font-size:13px;display:none;line-height:1.6;}
-.qfb.show{display:block;}
-.qfb.ok{background:var(--green-l);color:var(--green-d);}
-.qfb.no{background:var(--red-l);color:var(--red-d);}
-
-/* ═══ REVEAL ═══ */
-.rbtn{padding:8px 18px;border-radius:9px;font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--card);color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;margin-top:10px;}
-.rbtn:hover{border-color:var(--blue);color:var(--blue);}
-.rvl{display:none;margin-top:12px;}
-.rvl.on{display:block;animation:fadeUp .25s ease;}
-textarea.scratch{width:100%;min-height:80px;border:1.5px solid var(--border);border-radius:9px;padding:10px;font:400 13px 'Nunito',sans-serif;color:var(--text);background:#FAFBFC;resize:vertical;margin:8px 0;}
-textarea.scratch:focus{outline:none;border-color:var(--blue);}
-
-/* ═══ PAGE NAV ═══ */
-.pnav{display:flex;justify-content:space-between;align-items:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--border);}
-.btn{padding:9px 22px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:6px;}
-.btn-prev{border:1.5px solid var(--border);background:var(--card);color:var(--muted);}
-.btn-prev:hover{border-color:var(--blue);color:var(--blue);}
-.btn-next{background:var(--blue);color:#fff;border:none;box-shadow:0 4px 14px rgba(2,132,199,.35);}
-.btn-next:hover{background:var(--blue-d);box-shadow:0 6px 18px rgba(2,132,199,.45);}
-
-/* ═══ CANVAS ═══ */
-.cv-wrap{background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:12px;margin:12px 0;display:flex;flex-direction:column;align-items:center;}
-.cv-ctrl{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
-.cv-ctrl label{font-size:13px;color:var(--muted);}
-.cv-ctrl select{border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:'Nunito',sans-serif;}
-canvas{border-radius:8px;display:block;}
-
-/* ═══ LAYOUT ═══ */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;}
-hr.sep{border:none;border-top:1px solid var(--border);margin:1.5rem 0;}
-.hl{background:linear-gradient(135deg,#EFF6FF,#EDE9FE);border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:1.25rem;border:1px solid #BFDBFE;}
-.hl p{font-size:14px;color:#1E3A8A;line-height:1.75;}
-mark{background:#FEF9C3;padding:1px 4px;border-radius:3px;}
+body{font-family:'Nunito',sans-serif;background:#EFF6FF;color:#1E293B;min-height:100vh;}
+.container{max-width:900px;margin:0 auto;padding:3rem 1.5rem;}
+header{text-align:center;margin-bottom:3rem;}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:#DBEAFE;color:#1D4ED8;padding:4px 14px;border-radius:20px;margin-bottom:14px;}
+header h1{font-family:'Poppins',sans-serif;font-size:36px;font-weight:700;color:#1E293B;margin-bottom:10px;}
+header .subtitle{font-size:14px;color:#475569;margin-bottom:2rem;}
+.notice{background:#fff;border:1px solid #BFDBFE;border-left:4px solid #2563EB;border-radius:10px;padding:1.25rem 1.5rem;text-align:left;margin-bottom:2.5rem;}
+.notice p{font-size:13.5px;color:#475569;line-height:1.75;margin-bottom:8px;}
+.notice p:last-child{margin-bottom:0;}
+.notice strong{color:#1E293B;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+@media(max-width:700px){.grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:450px){.grid{grid-template-columns:1fr;}}
+.card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:1.25rem;text-decoration:none;color:inherit;transition:all .18s;display:block;position:relative;}
+.card:hover{border-color:#2563EB;box-shadow:0 4px 18px rgba(37,99,235,.12);transform:translateY(-2px);}
+.card-num{font-size:11px;font-family:'Poppins',sans-serif;font-weight:700;color:#93C5FD;letter-spacing:.08em;margin-bottom:8px;}
+.card h2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;color:#1E293B;margin-bottom:6px;}
+.card p{font-size:12.5px;color:#64748B;line-height:1.6;}
+.card-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#CBD5E1;font-size:16px;transition:all .18s;}
+.card:hover .card-arrow{color:#2563EB;right:10px;}
+footer{text-align:center;margin-top:3rem;font-size:12px;color:#94A3B8;}
 </style>
 </head>
 <body>
-
-<!-- ═══════════ SIDEBAR ═══════════ -->
-<nav id="sb">
-  <div class="sb-head">
-    <div class="sb-tag">MATHF114 · Chapitre 5</div>
-    <div class="sb-title">Fonctions Multivariables</div>
+<div class="container">
+  <header>
+    <div class="tag">MATHF114 — ULB</div>
+    <h1>Cours interactifs</h1>
+    <p class="subtitle">Clique sur un chapitre pour accéder au cours.</p>
+    <div class="notice">
+      <p><strong>Comment ce cours a été construit.</strong> Basé sur l'examen de janvier 2026, les anciens examens MATHF112 de 2021 à 2024, et une sélection ciblée des exercices de TP. La plupart des exercices des TP abordent les concepts du cours de façon trop indirecte par rapport au style de l'examen — seuls ceux dont le niveau et le format correspondent à ce qui tombe réellement ont été retenus.</p>
+      <p>Les démonstrations ont été volontairement écartées, sauf deux exceptions : le chapitre 1 (Logique) qui est entièrement basé sur les preuves, et la preuve d'unicité de la limite (chapitre 3) qui est tombée à l'examen de janvier. Il devrait y avoir une question sur les démonstrations à l'examen, mais j'ai préféré les sauter. Libre à vous de les faire.</p>
+    </div>
+  </header>
+  <div class="grid">
+    <a class="card" href="https://3ebdx.github.io/mathf114/chap1.html">
+      <div class="card-num">Chapitre 01</div>
+      <h2>Logique</h2>
+      <p>Récurrence, absurde, contraposée, preuves directes.</p>
+      <span class="card-arrow">→</span>
+    </a>
+    <a class="card" href="https://3ebdx.github.io/mathf114/chap2.html">
+      <div class="card-num">Chapitre 02</div>
+      <h2>Combinatoire</h2>
+      <p>Coefficients binomiaux, dénombrement, triangle de Pascal.</p>
+      <span class="card-arrow">→</span>
+    </a>
+    <a class="card" href="https://3ebdx.github.io/mathf114/chap3.html">
+      <div class="card-num">Chapitre 03</div>
+      <h2>Limites</h2>
+      <p>Definition epsilon-delta, continuité, topologie de R.</p>
+      <span class="card-arrow">→</span>
+    </a>
+    <a class="card" href="https://3ebdx.github.io/mathf114/chap4.html">
+      <div class="card-num">Chapitre 04</div>
+      <h2>Derivées</h2>
+      <p>Derivabilité, Taylor, MacLaurin, L'Hopital.</p>
+      <span class="card-arrow">→</span>
+    </a>
+    <a class="card" href="https://3ebdx.github.io/mathf114/chap5.html">
+      <div class="card-num">Chapitre 05</div>
+      <h2>Multivariables</h2>
+      <p>Gradient, differentiabilité, dérivées partielles et directionnelles.</p>
+      <span class="card-arrow">→</span>
+    </a>
+    <a class="card" href="https://3ebdx.github.io/mathf114/chap6.html">
+      <div class="card-num">Chapitre 06</div>
+      <h2>Intégrales</h2>
+      <p>Intégrales définies, multiples, longueur de courbes.</p>
+      <span class="card-arrow">→</span>
+    </a>
   </div>
-  <div class="sb-prog">
-    <div class="prog-bar"><div class="prog-fill" id="pf"></div></div>
-    <div class="prog-txt" id="pt">0 / 12 sections visitées</div>
-  </div>
-  <div class="sb-section">Introduction</div>
-  <div class="ni on" onclick="go(0)"><span class="nn">00</span>Vue d'ensemble</div>
-  <div class="sb-section">Fonctions R → Rᵐ</div>
-  <div class="ni" onclick="go(1)"><span class="nn">01</span>Composantes &amp; dérivabilité</div>
-  <div class="ni" onclick="go(2)"><span class="nn">02</span>Courbes paramétrées</div>
-  <div class="sb-section">Fonctions Rⁿ → R</div>
-  <div class="ni" onclick="go(3)"><span class="nn">03</span>Graphes &amp; niveaux</div>
-  <div class="ni" onclick="go(4)"><span class="nn">04</span>Topologie</div>
-  <div class="ni" onclick="go(5)"><span class="nn">05</span>Limites multivariées</div>
-  <div class="ni" onclick="go(6)"><span class="nn">06</span>Continuité</div>
-  <div class="sb-section">Différentiabilité</div>
-  <div class="ni" onclick="go(7)"><span class="nn">07</span>Dérivées partielles</div>
-  <div class="ni" onclick="go(8)"><span class="nn">08</span>Différentiabilité</div>
-  <div class="ni" onclick="go(9)"><span class="nn">09</span>Gradient &amp; plan tangent</div>
-  <div class="ni" onclick="go(10)"><span class="nn">10</span>Règle de la chaîne</div>
-  <div class="ni" onclick="go(11)"><span class="nn">11</span>Plus grande pente</div>
-</nav>
-
-<!-- ═══════════ MAIN ═══════════ -->
-<main id="main">
-
-<!-- ══ 00 INTRO ══ -->
-<div class="pg on" id="p0">
-<div class="ph"><div class="chip">Introduction</div><h2>Bienvenue dans le Chapitre 5 🎯</h2><p class="lead">Ce cours remplace tes slides. Chaque section = une notion, avec la définition exacte de la prof, une explication visuelle, et un quiz. Commence section 00 et avance dans l'ordre — tout est là.</p></div>
-<div class="g2">
-<div class="c c-def"><div class="badge bd">C'est quoi ?</div><h3>Fonction multivariable</h3><p>Prend plusieurs variables en entrée et/ou donne plusieurs valeurs en sortie.</p><div class="mbl">$$f : \mathbb{R}^n \to \mathbb{R}^m$$</div><p><strong>Ex 1 :</strong> \(f(x,y)=x^2+y^2\) — 2 entrées, 1 sortie.<br><strong>Ex 2 :</strong> \(\gamma(t)=(\cos t, \sin t)\) — 1 entrée, 2 sorties.</p></div>
-<div class="c c-ex"><div class="badge be">Pourquoi ?</div><h3>Applications concrètes</h3><ul><li><strong>Machine learning</strong> : fonction de perte en millions de paramètres</li><li><strong>Infographie</strong> : surface 3D = f(x,y)</li><li><strong>Physique</strong> : T(x,y,z) = température en un point</li><li><strong>Optimisation</strong> : minimiser f avec plusieurs contraintes</li></ul></div>
+  <footer>MATHF114 — ULB · Cours interactifs</footer>
 </div>
-<div class="c-key c"><div class="badge bk">Plan du cours</div><h3>Ce qu'on va couvrir</h3><p><strong>Partie 1 — \(\mathbb{R} \to \mathbb{R}^m\) :</strong> composantes, limites, continuité, dérivabilité, courbes paramétrées.</p><p><strong>Partie 2 — \(\mathbb{R}^n \to \mathbb{R}\) :</strong> graphes, courbes de niveau, topologie, limites, continuité.</p><p><strong>Partie 3 — Différentiabilité :</strong> dérivées partielles, Thm 5.64, gradient, Prop 5.58, règle de la chaîne, plus grande pente.</p></div>
-<div class="qz"><h4>Quiz d'accroche 🧠</h4><div class="qs">Parmi ces fonctions, laquelle est "multivariable" (plusieurs entrées) ?</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q00')">A) \(f(x) = \sin(x)\)</button><button class="qo" onclick="q(this,true,'q00')">B) \(f(x,y) = x^2 - 2xy + y^2\)</button><button class="qo" onclick="q(this,false,'q00')">C) \(f(t) = e^t\)</button></div><div class="qfb" id="q00">✓ Correct ! \(f(x,y)\) dépend de deux variables \(x\) et \(y\). Les autres n'ont qu'une seule entrée.</div></div>
-<div class="pnav"><span></span><button class="btn btn-next" onclick="go(1)">Commencer →</button></div>
-</div>
-
-<!-- ══ 01 FONCTIONS R→Rᵐ ══ -->
-<div class="pg" id="p1">
-<div class="ph"><div class="chip">Section 01</div><h2>Fonctions \(\mathbb{R} \to \mathbb{R}^m\) — Composantes &amp; Dérivabilité</h2><p class="lead">Une fonction vectorielle d'une variable réelle. Tout se réduit aux composantes : limites, continuité, dérivabilité.</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Composantes</div><h3>\(f : A \subset \mathbb{R} \to \mathbb{R}^m\)</h3><p>Pour chaque \(t \in A\), \(f(t)\) est un vecteur de \(\mathbb{R}^m\). On le repère par ses \(m\) coordonnées :</p><div class="mbl">$$f(t) = (f_1(t),\; f_2(t),\; \ldots,\; f_m(t))$$</div><p>Les \(f_i : \mathbb{R} \to \mathbb{R}\) sont les <strong>composantes</strong> de \(f\). On écrit \(f = (f_1, \ldots, f_m)\).</p><div class="c-geo" style="border-radius:8px;padding:.75rem 1rem;margin-top:10px;"><p><strong>Exemple :</strong> \(f(t) = (\cos t, \sin t)\) a pour composantes \(f_1(t) = \cos t\) et \(f_2(t) = \sin t\).</p></div></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Limite</div><h3>\(\lim_{x \to a} f(x) = L\) composante par composante</h3><p>\(L = (L_1, \ldots, L_m)\) est la limite de \(f\) en \(a\) si et seulement si :</p><div class="mbl">$$\text{Pour tout } 1 \le i \le m : \quad \lim_{x \to a} f_i(x) = L_i$$</div><div class="c-warn" style="border-radius:8px;padding:.75rem 1rem;margin-top:8px;"><p>⚠️ Derrière cette notation se cachent \(m\) limites réelles ! Toutes les règles de calcul (somme, produit, composition) s'appliquent composante par composante.</p></div></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Continuité en \(a\)</div><h3>\(f\) continue en \(a\) si \(\lim_{x \to a} f(x) = f(a)\)</h3><p>Équivalent : chaque composante \(f_i\) est continue en \(a\).</p><p><strong>Ex :</strong> \(f(t) = (t^3, t-1, \sin t)\) est continue (composantes polynomiales + sin).</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Dérivabilité</div><h3>La dérivée est un vecteur !</h3><p>\(f\) est dérivable en \(a\) si chaque \(f_i\) l'est. Dans ce cas :</p><div class="mbl">$$f'(a) = (f_1'(a),\; f_2'(a),\; \ldots,\; f_m'(a)) \in \mathbb{R}^m$$</div><div class="c-warn" style="border-radius:8px;padding:.75rem 1rem;margin-top:8px;"><p>⚠️ \(f'(a)\) est un <strong>vecteur</strong> de \(\mathbb{R}^m\), pas un scalaire ! On a aussi \(f'(a) = \lim_{x \to a}\frac{f(x)-f(a)}{x-a}\).</p></div><p style="margin-top:10px;"><strong>Ex :</strong> \(f(t) = (t^3, t-1, \sin t) \Rightarrow f'(t) = (3t^2, 1, \cos t)\)</p></div>
-
-<div class="qz"><h4>Quiz 1.1 🧠</h4><div class="qs">Soit \(f : \mathbb{R} \to \mathbb{R}^2\) avec \(f(t) = (e^t, \cos t)\). Que vaut \(f'(0)\) ?</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q1a')">(0, 0)</button><button class="qo" onclick="q(this,true,'q1a')">(1, 0)</button><button class="qo" onclick="q(this,false,'q1a')">(e, −1)</button><button class="qo" onclick="q(this,false,'q1a')">(1, −1)</button></div><div class="qfb" id="q1a">✓ \(f_1'(t)=e^t \Rightarrow f_1'(0)=1\). \(f_2'(t)=-\sin t \Rightarrow f_2'(0)=0\). Réponse : \((1,\,0)\).</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(0)">← Précédent</button><button class="btn btn-next" onclick="go(2)">Suivant →</button></div>
-</div>
-
-<!-- ══ 02 COURBES PARAMÉTRÉES ══ -->
-<div class="pg" id="p2">
-<div class="ph"><div class="chip">Section 02</div><h2>Courbes paramétrées</h2><p class="lead">Une courbe paramétrée décrit la trajectoire d'un mobile dans \(\mathbb{R}^m\). Le vecteur dérivé = vitesse instantanée. Pense à une voiture : même route, vitesses différentes = même image, reparamétrisation différente.</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Courbe paramétrée</div><h3>\(\gamma : I \subset \mathbb{R} \to \mathbb{R}^m\) application dérivable</h3><p>Définie sur un intervalle \(I\). La variable \(t\) représente souvent le temps.</p><ul><li>\(m=2\) : trajectoire dans un <strong>plan</strong></li><li>\(m=3\) : trajectoire dans l'<strong>espace</strong></li></ul><div class="c-warn" style="border-radius:8px;padding:.75rem 1rem;margin-top:8px;"><p>⚠️ <strong>L'image</strong> \(\text{Im}(\gamma) \subset \mathbb{R}^m\) est la trajectoire. Ce n'est <em>pas</em> le graphe de \(\gamma\) (qui serait dans \(\mathbb{R}^{1+m}\)).</p></div></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Vecteur vitesse</div><h3>Trois objets à connaître</h3><ul><li><strong>Vecteur vitesse / tangent</strong> à l'instant \(t\) : \(\gamma'(t) \in \mathbb{R}^m\)</li><li><strong>Vitesse numérique</strong> : \(\|\gamma'(t)\|\) (la norme du vecteur vitesse)</li><li><strong>Vecteur tangent unitaire</strong> : \(T(t) = \dfrac{\gamma'(t)}{\|\gamma'(t)\|}\), de norme 1</li></ul></div>
-
-<div class="c c-ex"><div class="badge be">Quatre exemples fondamentaux</div><h3>À connaître par cœur</h3><p><strong>1. Droite :</strong> \(\gamma(t)=(t,t)\), \(\gamma'=(1,1)\), \(\|\gamma'\|=\sqrt{2}\)</p><p><strong>2. Parabole :</strong> \(\gamma(t)=(t,t^2)\), \(\gamma'=(1,2t)\), \(\|\gamma'\|=\sqrt{1+4t^2}\)</p><p><strong>3. Cercle :</strong> \(\gamma(t)=(\cos t,\sin t)\), \(\gamma'=(-\sin t,\cos t)\), \(\|\gamma'\|=1\)</p><p><strong>4. Hélice :</strong> \(\gamma(t)=(\cos t,\sin t,\tfrac{t}{2\pi})\), \(\gamma'=(-\sin t,\cos t,\tfrac{1}{2\pi})\), \(\|\gamma'\|=\sqrt{1+\tfrac{1}{4\pi^2}}\)</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Reparamétrisation</div><h3>Changer la vitesse sur la même route</h3><p>Soit \(\alpha : J \to I\) une bijection dérivable. La <strong>reparamétrisation</strong> de \(\gamma\) par \(\alpha\) est :</p><div class="mbl">$$\eta : J \to \mathbb{R}^m, \quad t \mapsto (\gamma \circ \alpha)(t) = \gamma(\alpha(t))$$</div><p>Même trajectoire, vitesse différente. Même <strong>orientation</strong> si \(\alpha\) est croissante.</p><div class="c-geo" style="border-radius:8px;padding:.75rem 1rem;margin-top:8px;"><p><strong>Intuition :</strong> La route ne change pas si tu roules à 50 ou 100 km/h. Ce qui change, c'est \(\|\gamma'(t)\|\).</p></div></div>
-
-<div class="qz"><h4>Quiz 2.1 🧠</h4><div class="qs">Soit \(\gamma(t)=(\cos t, \sin t)\). Que vaut la vitesse numérique \(\|\gamma'(t)\|\) ?</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q2a')">0</button><button class="qo" onclick="q(this,true,'q2a')">1 (constante)</button><button class="qo" onclick="q(this,false,'q2a')">\(\sqrt{2}\)</button><button class="qo" onclick="q(this,false,'q2a')">\(t\)</button></div><div class="qfb" id="q2a">✓ \(\gamma'=(-\sin t, \cos t) \Rightarrow \|\gamma'\|=\sqrt{\sin^2 t+\cos^2 t}=1\). Le cercle est parcouru à vitesse constante.</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(1)">← Précédent</button><button class="btn btn-next" onclick="go(3)">Suivant →</button></div>
-</div>
-
-<!-- ══ 03 GRAPHES + COURBES DE NIVEAU ══ -->
-<div class="pg" id="p3">
-<div class="ph"><div class="chip">Section 03</div><h2>Graphes &amp; Courbes de niveau</h2><p class="lead">Deux façons de visualiser \(f:\mathbb{R}^2\to\mathbb{R}\). Le graphe est une surface en 3D (difficile à dessiner). Les courbes de niveau sont des lignes dans le plan (comme une carte topo) — beaucoup plus utile !</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Graphe</div><h3>\(\Gamma_f = \{(x,\,f(x)) \mid x \in A\}\)</h3><p>Pour \(f : \mathbb{R}^2 \to \mathbb{R}\), le graphe est l'ensemble des solutions de \(z = f(x,y)\) dans \(\mathbb{R}^3\) — c'est une <strong>surface</strong>.</p><div class="mbl">$$\Gamma_f = \{(x,y,f(x,y)) \mid (x,y) \in \text{dom}(f)\} \subset \mathbb{R}^3$$</div></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Trace</div><h3>Trace d'une surface dans un plan</h3><p>L'<strong>intersection</strong> de la surface avec un plan. La trace de \(z=f(x,y)\) dans \(z=k\) est la courbe \(\{f(x,y)=k\}\) dans le plan \(z=k\).</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Courbe de niveau</div><h3>Ensemble de niveau \(k\)</h3><div class="mbl">$$\{(x,y) \in \text{dom}(f) \mid f(x,y) = k\}$$</div><p>C'est la <strong>projection dans le plan</strong> de la trace de la surface au niveau \(z=k\). Imagine une carte topographique : chaque courbe = une altitude fixe. <mark>Lignes serrées = pente raide. Lignes espacées = terrain plat.</mark></p></div>
-
-<div class="c"><div class="badge be">Démo interactive — Courbes de niveau</div><h3>Explore les niveaux 👇</h3><div class="cv-wrap"><div class="cv-ctrl"><label>Fonction :</label><select id="lcF" onchange="drawLC()"><option value="p">f(x,y) = x²+y²</option><option value="s">f(x,y) = x²−y²</option><option value="l">f(x,y) = x+y</option><option value="xy">f(x,y) = xy</option></select></div><canvas id="lcC" width="500" height="340"></canvas></div><p style="font-size:12px;color:var(--lite);text-align:center;">Chaque couleur = un niveau k. Change la fonction pour voir la forme des niveaux.</p></div>
-
-<div class="c c-ex"><div class="badge be">Formes à retenir</div><h3>4 fonctions fondamentales</h3><p><strong>\(f=x+y\) :</strong> niveaux = droites \(y=-x+k\) (parallèles)</p><p><strong>\(f=x^2+y^2\) :</strong> niveaux = cercles de rayon \(\sqrt{k}\) (\(k\ge0\))</p><p><strong>\(f=xy\) :</strong> niveaux = hyperboles \(y=k/x\)</p><p><strong>\(f=x^2-y^2\) :</strong> niveaux = hyperboles croisées</p></div>
-
-<div class="qz"><h4>Quiz 3.1 🧠</h4><div class="qs">Pour \(f(x,y)=x^2+y^2\), la courbe de niveau \(k=4\) est :</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q3a')">Une droite</button><button class="qo" onclick="q(this,true,'q3a')">Un cercle de rayon 2</button><button class="qo" onclick="q(this,false,'q3a')">Une parabole</button></div><div class="qfb" id="q3a">✓ \(x^2+y^2=4\) est un cercle de rayon \(\sqrt{4}=2\) centré à l'origine.</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(2)">← Précédent</button><button class="btn btn-next" onclick="go(4)">Suivant →</button></div>
-</div>
-
-<!-- ══ 04 TOPOLOGIE ══ -->
-<div class="pg" id="p4">
-<div class="ph"><div class="chip">Section 04</div><h2>Topologie de \(\mathbb{R}^n\)</h2><p class="lead">Dans \(\mathbb{R}^n\), il n'y a plus "gauche" et "droite". On remplace les intervalles par des <em>boules</em>. Ces notions sont nécessaires pour définir proprement les limites et la différentiabilité.</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Boule ouverte</div><h3>\(B(a,\delta)\) — l'analogue de l'intervalle ouvert</h3><div class="mbl">$$B(a, \delta) := \{x \in \mathbb{R}^n \mid \|x - a\| < \delta\}$$</div><ul><li>Dans \(\mathbb{R}^1\) : intervalle ouvert \(]a-\delta,\, a+\delta[\)</li><li>Dans \(\mathbb{R}^2\) : <strong>disque ouvert</strong> (sans le cercle-frontière)</li><li>Dans \(\mathbb{R}^3\) : <strong>boule ouverte</strong> (sans la sphère-frontière)</li></ul></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Point intérieur &amp; Ensemble ouvert</div><h3>Intérieur</h3><p>\(a\) est <strong>intérieur</strong> à \(A \subset \mathbb{R}^n\) s'il existe \(\delta > 0\) tel que \(B(a,\delta) \subset A\).<br>L'ensemble des points intérieurs est noté \(\text{Int}(A)\).<br>\(A\) est <strong>ouvert</strong> si \(A = \text{Int}(A)\) — le bord n'est pas dans \(A\).</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Point adhérent &amp; Ensemble fermé</div><h3>Adhérence</h3><p>\(a \in \mathbb{R}^n\) est <strong>adhérent</strong> à \(A\) si pour tout \(\delta > 0\) : \(B(a,\delta) \cap A \ne \emptyset\).<br>L'ensemble des points adhérents est noté \(\text{Adh}(A)\).<br>\(A\) est <strong>fermé</strong> si \(A = \text{Adh}(A)\) — le bord est dans \(A\).</p></div>
-
-<div class="c-geo c"><div class="badge be">Intuition visuelle</div><h3>Le bord : inclus ou exclu ?</h3><p><strong>Ouvert</strong> \(D = \{x^2+y^2 < 1\}\) : le cercle \(x^2+y^2=1\) n'est PAS dans \(D\). On peut "bouger" un peu autour de n'importe quel point de \(D\) sans sortir.</p><p><strong>Fermé</strong> \(\bar{D} = \{x^2+y^2 \le 1\}\) : le cercle est inclus. Le point \((1,0)\) est adhérent à \(D\) (toute boule autour de \((1,0)\) touche \(D\)) mais pas intérieur.</p><p>⚠️ Un ensemble peut être <em>ni ouvert ni fermé</em> (ex : \(\{0 < x \le 1\}\)).</p></div>
-
-<div class="c c-ex"><div class="badge be">Exemple typique TP (Exo 5.12)</div><h3>\(A = \{(x,y) \mid 1-xy > 0\}\)</h3><p>La condition \(xy < 1\) est <em>stricte</em> → chaque point de \(A\) a une boule autour de lui entièrement dans \(A\) → \(\text{Int}(A)=A\) → <strong>A est ouvert</strong>.</p><p>\(\text{Adh}(A) = \{xy \le 1\} \ne A\) → <strong>A n'est pas fermé</strong>.</p></div>
-
-<div class="qz"><h4>Quiz 4.1 🧠</h4><div class="qs">L'ensemble \(\{(x,y) \mid (x-3)^2+(y+2)^2 \le 4\}\) est :</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q4a')">Ouvert</button><button class="qo" onclick="q(this,true,'q4a')">Fermé</button><button class="qo" onclick="q(this,false,'q4a')">Ni l'un ni l'autre</button></div><div class="qfb" id="q4a">✓ L'inégalité \(\le\) inclut le cercle-frontière. L'ensemble est égal à son adhérence → <strong>fermé</strong>.</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(3)">← Précédent</button><button class="btn btn-next" onclick="go(5)">Suivant →</button></div>
-</div>
-
-<!-- ══ 05 LIMITES ══ -->
-<div class="pg" id="p5">
-<div class="ph"><div class="chip">Section 05</div><h2>Limites multivariées</h2><p class="lead">La définition \(\varepsilon\)-\(\delta\) est identique à la dimension 1, mais les valeurs absolues deviennent des <em>normes vectorielles</em>. La grande nouveauté : on peut approcher un point depuis une <em>infinité</em> de directions.</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Limite (ε-δ)</div><h3>\(\lim_{x \to a} f(x) = L\)</h3><p>\(f : A \subset \mathbb{R}^n \to \mathbb{R}^m\), \(a \in \text{Adh}(A)\), \(L \in \mathbb{R}^m\). On dit que la limite de \(f\) en \(a\) est \(L\) si :</p><div class="mbl">$$(\forall \varepsilon > 0)(\exists \delta > 0)(\forall x \in A)\bigl((x \ne a \text{ et } \|x-a\| < \delta) \Rightarrow \|f(x)-L\| < \varepsilon\bigr)$$</div><div class="c-warn" style="border-radius:8px;padding:.75rem 1rem;margin-top:8px;"><p>⚠️ Les deux normes sont dans des espaces différents : \(\|x-a\|\) dans \(\mathbb{R}^n\), \(\|f(x)-L\|\) dans \(\mathbb{R}^m\). Il n'y a plus de notion "à gauche/à droite" — on approche depuis toutes les directions.</p></div></div>
-
-<div class="c c-def"><div class="badge bd">Proposition — Unicité de la limite</div><h3>La limite est unique</h3><p>Si \(L_1\) et \(L_2\) vérifient tous les deux la définition, alors \(L_1 = L_2\).</p><p style="font-size:12px;color:var(--lite);">C'est la proposition dont la preuve a été demandée en Q6 de l'examen raté.</p></div>
-
-<div class="c c-def"><div class="badge bd">Proposition — Règles de calcul</div><h3>Opérations sur les limites</h3><p>Si \(\lim_{x \to a} f(x)\) et \(\lim_{x \to a} g(x)\) existent :</p><div class="mbl">$$\lim(f+g) = \lim f + \lim g \qquad \lim(fg) = \lim f \cdot \lim g$$</div><div class="mbl">$$\lim\frac{f}{g} = \frac{\lim f}{\lim g} \quad (\text{si }\lim g \ne 0)$$</div><p>Et pour les compositions : si \(\lim_{x\to a}f(x)=L\) et \(g\) continue en \(L\) : \(\lim_{x\to a} g(f(x)) = g(L)\).</p></div>
-
-<hr class="sep">
-<div class="c-key c"><div class="badge bk">⭐ Méthode clé — Prouver qu'une limite n'existe pas</div><h3>Technique des 2 chemins</h3><p>Trouver deux courbes paramétrées \(\gamma_1, \gamma_2 \to a\) avec :</p><div class="mbl">$$\lim_{t \to t_0} f(\gamma_1(t)) \ne \lim_{t \to t_0} f(\gamma_2(t))$$</div><p>→ Par l'unicité de la limite, \(\lim_{x\to a} f(x)\) n'existe pas.</p></div>
-
-<div class="c c-prof"><div class="badge bp">Méthode prof — Rédaction complète</div><h3>Montrer que \(\lim_{(x,y)\to(0,0)}\frac{xy}{x^2+y^2}\) n'existe pas</h3><ul class="steps"><li><div class="sn">1</div><div class="sc"><strong>Chemin 1 :</strong> \(\gamma_1(t)=(t,0)\). Alors \(f(t,0) = 0/t^2 = 0 \xrightarrow[t\to 0]{} 0\).</div></li><li><div class="sn">2</div><div class="sc"><strong>Chemin 2 :</strong> \(\gamma_2(t)=(t,t)\). Alors \(f(t,t) = t^2/(2t^2) = 1/2 \xrightarrow[t\to 0]{} 1/2\).</div></li><li><div class="sn">3</div><div class="sc"><strong>Conclusion :</strong> \(0 \ne 1/2\) — les limites le long des deux chemins diffèrent. Par unicité, \(\lim_{(x,y)\to(0,0)}\frac{xy}{x^2+y^2}\) <strong>n'existe pas</strong>.</div></li></ul></div>
-
-<div class="c c-warn"><div class="badge bw">Attention — Erreur classique</div><h3>2 chemins identiques = ça prouve rien !</h3><p>Si deux chemins donnent la <em>même</em> limite, ça ne prouve PAS que la limite existe. Pour prouver l'existence, il faut la définition ε-δ ou le théorème des gendarmes.</p></div>
-
-<div class="qz"><h4>Quiz 5.1 🧠</h4><div class="qs">Pour \(f(x,y)=\frac{x^2}{x^2+y^2}\) au point \((0,0)\) : chemin \((t,0)\) donne la limite...</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q5a')">0</button><button class="qo" onclick="q(this,true,'q5a')">1</button><button class="qo" onclick="q(this,false,'q5a')">1/2</button></div><div class="qfb" id="q5a">✓ \(f(t,0)=t^2/t^2=1\). Mais chemin \((0,t)\) donne \(f(0,t)=0\). Les limites diffèrent → la limite en (0,0) n'existe pas.</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(4)">← Précédent</button><button class="btn btn-next" onclick="go(6)">Suivant →</button></div>
-</div>
-
-<!-- ══ 06 CONTINUITÉ ══ -->
-<div class="pg" id="p6">
-<div class="ph"><div class="chip">Section 06</div><h2>Continuité</h2><p class="lead">Même définition qu'en dimension 1, mais avec des normes vectorielles. La règle pratique : toute fonction construite à partir de fonctions élémentaires est continue sur son domaine.</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Continuité en \(a\)</div><h3>\(\lim_{x \to a} f(x) = f(a)\)</h3><p>\(f : A \subset \mathbb{R}^n \to \mathbb{R}^m\) est <strong>continue en \(a\)</strong> si la limite en \(a\) existe et vaut \(f(a)\).</p><p>\(f\) est <strong>continue</strong> (tout court) si elle est continue en tout point de son domaine.</p></div>
-
-<div class="c c-def"><div class="badge bd">Proposition — Stabilité</div><h3>Opérations qui conservent la continuité</h3><p>Si \(f, g\) sont continues en \(a\) :</p><ul><li>\(f+g\), \(f-g\), \(fg\) sont continues en \(a\)</li><li>\(f/g\) est continue en \(a\) si \(g(a) \ne 0\)</li><li>\(g \circ f\) est continue en \(a\) si \(f\) est continue en \(a\) et \(g\) en \(f(a)\)</li></ul><div class="c-geo" style="border-radius:8px;padding:.75rem 1rem;margin-top:8px;"><p><strong>Remarque :</strong> Toute fonction qui s'écrit à l'aide de \(+, \times, \div\), sin, cos, exp, log... est continue sur son domaine. Ça prouve la continuité de presque tout ce qu'on voit en pratique.</p></div></div>
-
-<div class="c c-def"><div class="badge bd">Corollaire — Lien avec les courbes paramétrées</div><h3>Si la limite existe, elle ne dépend pas du chemin</h3><p>Si \(\lim_{x \to a} f(x) = L\) existe, alors pour <em>toute</em> courbe \(\gamma\) avec \(\gamma(0) = a\) :</p><div class="mbl">$$\lim_{t \to 0} f(\gamma(t)) = L$$</div><p>C'est le fondement de la technique des 2 chemins (section précédente).</p></div>
-
-<div class="c c-ex"><div class="badge be">Exemple important</div><h3>Prolongement par continuité</h3><div class="mbl">$$g(x,y) = \begin{cases} \dfrac{x^3}{x^2+y^2} & \text{si } (x,y) \ne (0,0) \\ 0 & \text{si } (x,y) = (0,0) \end{cases}$$</div><p>\(g\) est continue sur \(\mathbb{R}^2\) — la limite en \((0,0)\) vaut 0 (prouvable par gendarmes : \(|f| \le |x| \to 0\)).</p></div>
-
-<div class="qz"><h4>Quiz 6.1 🧠</h4><div class="qs">\(f(x,y) = \sin(x) \cdot e^{-y^2}\) est-elle continue sur \(\mathbb{R}^2\) ?</div><div class="qo-wrap"><button class="qo" onclick="q(this,true,'q6a')">Oui — produit de fonctions continues.</button><button class="qo" onclick="q(this,false,'q6a')">Non — sin s'annule en 0.</button><button class="qo" onclick="q(this,false,'q6a')">Non — 2 variables.</button></div><div class="qfb" id="q6a">✓ \(\sin(x)\) est continue en \(x\), \(e^{-y^2}\) est continue en \(y\). Leur produit est continu. C'est une combinaison de fonctions élémentaires.</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(5)">← Précédent</button><button class="btn btn-next" onclick="go(7)">Suivant →</button></div>
-</div>
-
-<!-- ══ 07 DÉRIVÉES PARTIELLES ══ -->
-<div class="pg" id="p7">
-<div class="ph"><div class="chip">Section 07</div><h2>Dérivées partielles &amp; directionnelles</h2><p class="lead">En dim \(n>1\), on ne peut pas diviser par un vecteur. Astuce : fixer une direction et regarder comment \(f\) varie dedans — c'est la dérivée directionnelle. Si la direction = un axe de coordonnée, on parle de dérivée partielle.</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Dérivée directionnelle</div><h3>\(f\) varie dans la direction \(\vec{v}\)</h3><p>Soit \(f : A \subset \mathbb{R}^n \to \mathbb{R}\), \(a \in \text{Int}(A)\), \(\vec{v} \in \mathbb{R}^n\). La <strong>dérivée directionnelle</strong> dans la direction \(\vec{v}\) est :</p><div class="mbl">$$\frac{\partial f}{\partial \vec{v}}(a) = \partial_{\vec{v}} f(a) := \lim_{t \to 0} \frac{f(a + t\vec{v}) - f(a)}{t}$$</div><p>Si cette limite existe. On note aussi \(D_{\vec{v}} f(a)\). Le point \(a\) doit être <strong>intérieur</strong> à \(A\) pour que ça ait du sens.</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Dérivée partielle</div><h3>Cas particulier : direction = axe \(\vec{e}_i\)</h3><p>Quand \(\vec{v} = \vec{e}_i = (0,\ldots,1,\ldots,0)\), on parle de la <strong>\(i\)-ème dérivée partielle</strong> :</p><div class="mbl">$$\frac{\partial f}{\partial x_i}(a) = \lim_{t \to 0} \frac{f(a_1,\ldots,a_{i-1},a_i+t,a_{i+1},\ldots,a_n) - f(a)}{t}$$</div><p>On note aussi \(\partial_i f(a)\) ou \(\partial_{x_i} f(a)\).</p></div>
-
-<div class="c-key c"><div class="badge bk">⭐ Règle d'or — Calcul pratique</div><h3>Comment calculer \(\partial f/\partial x_i\)</h3><p>→ Traiter toutes les variables <strong>sauf \(x_i\)</strong> comme des <strong>constantes</strong>, et dériver par rapport à \(x_i\) normalement.</p></div>
-
-<div class="c c-ex"><div class="badge be">Exemple 1 — Trois variables</div><h3>\(f(x,y,z) = xy + x^2 + zy\)</h3><div class="mbl">$$\frac{\partial f}{\partial x} = y + 2x \qquad \frac{\partial f}{\partial y} = x + z \qquad \frac{\partial f}{\partial z} = y$$</div><p><strong>Pour \(\partial/\partial x\) :</strong> \(y\) et \(z\) sont constantes. \(xy\) donne \(y\), \(x^2\) donne \(2x\), \(zy\) donne \(0\).</p></div>
-
-<div class="c c-ex"><div class="badge be">Exemple 2 — Dérivées secondes</div><h3>\(g(x,y) = x^2 - 2xy + y^2\)</h3><div class="mbl">$$\partial_x g = 2x-2y \qquad \partial_y g = -2x+2y$$</div><div class="mbl">$$\partial_{xx} g = 2 \qquad \partial_{xy} g = -2 \qquad \partial_{yx} g = -2 \qquad \partial_{yy} g = 2$$</div><p><strong>Remarque :</strong> \(\partial_{xy} g = \partial_{yx} g = -2\). Ce n'est pas un hasard — c'est le théorème de Schwarz (hors programme, mais c'est vrai pour les fonctions "gentilles").</p></div>
-
-<div class="c-geo c"><div class="badge be">Interprétation géométrique</div><h3>Que signifie \(\partial f/\partial x\) ?</h3><p>C'est la <strong>pente de la surface \(z=f(x,y)\) dans la direction x</strong>, en fixant \(y\) constant. Concrètement : coupe la surface avec le plan vertical \(y=a_2\) → tu obtiens une courbe → \(\partial f/\partial x(a)\) est la pente de cette courbe en \(x=a_1\).</p></div>
-
-<div class="qz"><h4>Quiz 7.1 🧠</h4><div class="qs">Soit \(f(x,y) = x^2 \sin(3y)\). Que vaut \(\partial f/\partial y\) ?</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q7a')">\(2x\sin(3y)\)</button><button class="qo" onclick="q(this,true,'q7a')">\(3x^2\cos(3y)\)</button><button class="qo" onclick="q(this,false,'q7a')">\(x^2\cos(3y)\)</button></div><div class="qfb" id="q7a">✓ \(x^2\) est une constante pour \(\partial/\partial y\). On dérive \(\sin(3y)\) → \(3\cos(3y)\). Résultat : \(3x^2\cos(3y)\).</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(6)">← Précédent</button><button class="btn btn-next" onclick="go(8)">Suivant →</button></div>
-</div>
-
-<!-- ══ 08 DIFFÉRENTIABILITÉ ══ -->
-<div class="pg" id="p8">
-<div class="ph"><div class="chip">Section 08</div><h2>Différentiabilité</h2><p class="lead">Généralisation du plan tangent en plusieurs variables. Si \(f:\mathbb{R}\to\mathbb{R}\) avait une droite tangente, ici \(f:\mathbb{R}^2\to\mathbb{R}\) a un <em>plan tangent</em>. Le vecteur décrivant ce plan s'appelle le gradient \(\nabla f\).</p></div>
-
-<div class="c-geo c"><div class="badge be">Intuition — Du plan tangent</div><h3>Pour \(f:\mathbb{R}\to\mathbb{R}\) : droite tangente</h3><p>Équation : \(y = f'(a)(x-a) + f(a)\). Par définition : \(f'(a) = \lim_{x\to a}\frac{f(x)-f(a)}{x-a}\), ce qui équivaut à :</p><div class="mbl">$$\lim_{x \to a} \frac{f(x)-f(a)-f'(a)(x-a)}{x-a} = 0$$</div><p><strong>Pour \(f:\mathbb{R}^2\to\mathbb{R}\) :</strong> plan tangent en \((a,f(a))\) de forme \(z = \alpha(x-a_1)+\beta(y-a_2)+f(a)\). Le vecteur \(u=(\alpha,\beta)\) = <strong>la différentielle</strong> (= le gradient).</p></div>
-
-<div class="c c-def"><div class="badge bd">Définition — Différentiabilité</div><h3>\(f\) différentiable en \(a\)</h3><p>Soit \(f : A \subset \mathbb{R}^n \to \mathbb{R}\), \(a \in \text{Int}(A)\). \(f\) est <strong>différentiable en \(a\)</strong> s'il existe \(u \in \mathbb{R}^n\) tel que :</p><div class="mbl">$$\lim_{x \to a} \frac{f(x) - f(a) - u \cdot (x-a)}{\|x-a\|} = 0$$</div><p>Quand il existe, \(u\) est appelé la <strong>différentielle</strong> ou le <strong>gradient</strong> de \(f\) en \(a\), noté \(\nabla f(a)\).</p></div>
-
-<div class="c c-def"><div class="badge bd">Corollaire — Formule du gradient</div><h3>\(\nabla f(a) =\) vecteur des dérivées partielles</h3><div class="mbl">$$\nabla f(a) = \left(\frac{\partial f}{\partial x_1}(a),\ \frac{\partial f}{\partial x_2}(a),\ \ldots,\ \frac{\partial f}{\partial x_n}(a)\right) \in \mathbb{R}^n$$</div><p>En pratique : calculer le gradient = calculer les dérivées partielles.</p></div>
-
-<div class="c c-thm" style="border:2px solid var(--amber);border-radius:var(--r);"><div class="badge bt">Théorème 5.64 — Le plus important ⭐⭐⭐</div><h3>Relations entre régularité</h3><p>Soit \(f : A \subset \mathbb{R}^n \to \mathbb{R}\), \(a \in \text{Int}(A)\).</p><ol style="padding-left:1.4rem;font-size:14px;line-height:1.9;color:var(--muted);"><li>Si \(f\) est différentiable en \(a\) → \(f\) est <strong>continue</strong> en \(a\).</li><li>Si \(f\) est différentiable en \(a\) → toutes les dérivées directionnelles \(\partial_{\vec{v}} f(a)\) existent.</li><li style="color:var(--text);font-weight:700;">Si pour tout \(i\), la fonction \(x \mapsto \partial f/\partial x_i(x)\) est <strong>continue en \(a\)</strong> → \(f\) est <strong>différentiable en \(a\)</strong>.</li></ol><div class="c-prof" style="margin-top:12px;"><p>Le point (3) est ce qu'on utilise EN PRATIQUE. Les points (1) et (2) montrent les implications diff → cont → dérivées dir. existent. Mais l'inverse n'est pas toujours vrai !</p></div></div>
-
-<div class="c c-warn"><div class="badge bw">Attention — Pièges fréquents</div><h3>Ce qui n'implique PAS la différentiabilité</h3><ul><li>Être continue ≠ différentiable</li><li>Toutes les dérivées directionnelles existent ≠ différentiable</li><li>Dérivées partielles existent ≠ différentiable (il faut qu'elles soient <em>continues</em>)</li></ul></div>
-
-<div class="c c-prof"><div class="badge bp">Méthode prof — Rédaction exacte attendue</div><h3>Prouver que \(f(x,y) = xy\) est différentiable</h3><ul class="steps"><li><div class="sn">1</div><div class="sc">Calculer les dérivées partielles :<br>\(\dfrac{\partial f}{\partial x}(x,y) = y\) &nbsp;&nbsp; et &nbsp;&nbsp; \(\dfrac{\partial f}{\partial y}(x,y) = x\)</div></li><li><div class="sn">2</div><div class="sc">Vérifier la continuité :<br><em>Les fonctions \((x,y)\mapsto y\) et \((x,y)\mapsto x\) sont des polynômes, donc continues sur \(\mathbb{R}^2\).</em></div></li><li><div class="sn">3</div><div class="sc">Conclure en citant le théorème :<br><em>"Par le Théorème 5.64 (3), \(f\) est différentiable sur \(\mathbb{R}^2\)."</em></div></li></ul></div>
-
-<div class="qz"><h4>Quiz 8.1 🧠 — Style examen</h4><div class="qs">Pour montrer que \(f(x,y) = e^{x^2+y^2}\) est différentiable, tu fais :</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q8a')">Vérifier que \(f\) est continue (ça suffit).</button><button class="qo" onclick="q(this,true,'q8a')">Calculer \(\partial f/\partial x\) et \(\partial f/\partial y\), montrer qu'ils sont continus, conclure par Thm 5.64(3).</button><button class="qo" onclick="q(this,false,'q8a')">Vérifier directement la limite de la définition.</button></div><div class="qfb" id="q8a">✓ \(\partial_x f = 2xe^{x^2+y^2}\) et \(\partial_y f = 2ye^{x^2+y^2}\) sont continus sur \(\mathbb{R}^2\) (composition de fonctions continues). Par Thm 5.64(3), \(f\) est différentiable.</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(7)">← Précédent</button><button class="btn btn-next" onclick="go(9)">Suivant →</button></div>
-</div>
-
-<!-- ══ 09 GRADIENT + PLAN TANGENT ══ -->
-<div class="pg" id="p9">
-<div class="ph"><div class="chip">Section 09</div><h2>Gradient &amp; Plan tangent</h2><p class="lead">Le gradient est à la fois la différentielle et le vecteur donnant la dérivée directionnelle maximale. La Prop 5.58 relie les deux concepts clés du chapitre.</p></div>
-
-<div class="c c-def"><div class="badge bd">Proposition 5.58 — La formule clé</div><h3>Dérivée directionnelle via le gradient</h3><p>Si \(f\) est différentiable en \(a\), alors pour tout \(\vec{v} \in \mathbb{R}^n\) :</p><div class="mbl">$$\frac{\partial f}{\partial \vec{v}}(a) = \nabla f(a) \cdot \vec{v}$$</div><p>La dérivée directionnelle = <strong>produit scalaire</strong> entre le gradient et le vecteur direction. C'est la formule qu'on cite à l'examen.</p></div>
-
-<div class="c c-prof"><div class="badge bp">Méthode prof — Rédaction complète (Q9 examen)</div><h3>\(f(x,y)=xy\), calculer \(D_{(v_1,v_2)} f(1,1)\)</h3><ul class="steps"><li><div class="sn">1</div><div class="sc">Différentiabilité de \(f\) sur \(\mathbb{R}^2\) — vérifiée par Thm 5.64(3) (dérivées partielles \(y\) et \(x\) continues).</div></li><li><div class="sn">2</div><div class="sc">Calculer le gradient :<br>\(\nabla f(x,y) = (\partial_x f, \partial_y f) = (y, x)\)<br>\(\nabla f(1,1) = (1, 1)\)</div></li><li><div class="sn">3</div><div class="sc">Appliquer la Prop. 5.58 :<br><em>"Par la Proposition 5.58 :"</em><br>\(D_{(v_1,v_2)} f(1,1) = \nabla f(1,1) \cdot (v_1,v_2) = (1,1)\cdot(v_1,v_2) = v_1 + v_2\)</div></li></ul></div>
-
-<div class="c c-def"><div class="badge bd">Plan tangent au graphe de \(f\) en \((a, f(a))\)</div><h3>Équation du plan tangent</h3><div class="mbl">$$z = \frac{\partial f}{\partial x}(a)(x-a_1) + \frac{\partial f}{\partial y}(a)(y-a_2) + f(a)$$</div><p>Ou avec le gradient : \(z - f(a) = \nabla f(a) \cdot (x - a)\).</p></div>
-
-<div class="c c-ex"><div class="badge be">Exemple — Plan tangent (type exo 5.32)</div><h3>\(f(x,y) = \sqrt{9-x^2-y^2}\) au point \((1,-2)\)</h3><p>\(f(1,-2) = \sqrt{9-1-4} = 2\)</p><div class="mbl">$$\frac{\partial f}{\partial x} = \frac{-x}{\sqrt{9-x^2-y^2}} \Rightarrow \frac{\partial f}{\partial x}(1,-2) = \frac{-1}{2}$$</div><div class="mbl">$$\frac{\partial f}{\partial y} = \frac{-y}{\sqrt{9-x^2-y^2}} \Rightarrow \frac{\partial f}{\partial y}(1,-2) = \frac{2}{2} = 1$$</div><p>Plan tangent : \(z = -\frac{1}{2}(x-1) + 1\cdot(y+2) + 2\)</p></div>
-
-<div class="c"><div class="badge be">Démo interactive — Gradient field</div><h3>Gradient ⊥ courbes de niveau 👇</h3><div class="cv-wrap"><div class="cv-ctrl"><label>Fonction :</label><select id="gfF" onchange="drawGF()"><option value="p">f(x,y) = x²+y²</option><option value="s">f(x,y) = x²−y²</option><option value="l">f(x,y) = x+y</option><option value="xy">f(x,y) = xy</option></select></div><canvas id="gfC" width="500" height="340"></canvas></div><p style="font-size:12px;color:var(--lite);text-align:center;">Courbes de niveau (gris) + flèches gradient (bleu). Observe : les flèches sont toujours perpendiculaires aux courbes.</p></div>
-
-<div class="qz"><h4>Quiz 9.1 🧠</h4><div class="qs">Soit \(f(x,y) = 3x^2 + y\). Que vaut \(\nabla f(2,1)\) ?</div><div class="qo-wrap"><button class="qo" onclick="q(this,false,'q9a')">(3, 1)</button><button class="qo" onclick="q(this,true,'q9a')">(12, 1)</button><button class="qo" onclick="q(this,false,'q9a')">(6, 1)</button></div><div class="qfb" id="q9a">✓ \(\partial_x f = 6x \Rightarrow 6\cdot2=12\). \(\partial_y f = 1\). Donc \(\nabla f(2,1) = (12, 1)\).</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(8)">← Précédent</button><button class="btn btn-next" onclick="go(10)">Suivant →</button></div>
-</div>
-
-<!-- ══ 10 RÈGLE DE LA CHAÎNE ══ -->
-<div class="pg" id="p10">
-<div class="ph"><div class="chip">Section 10</div><h2>Règle de la chaîne</h2><p class="lead">Comment dériver \(f \circ g\) quand \(g : \mathbb{R} \to \mathbb{R}^n\) et \(f : \mathbb{R}^n \to \mathbb{R}\) ? Le résultat est un produit scalaire entre le gradient de \(f\) et la dérivée de \(g\).</p></div>
-
-<div class="c c-def"><div class="badge bd">Proposition — Règle de la chaîne</div><h3>\((f \circ g)'(t) = \nabla f(g(t)) \cdot g'(t)\)</h3><p>Soient \(g : I \subset \mathbb{R} \to \mathbb{R}^n\) dérivable en \(t\) et \(f : \mathbb{R}^n \to \mathbb{R}\) différentiable en \(g(t)\). Alors \(f \circ g\) est dérivable en \(t\) et :</p><div class="mbl">$$(f \circ g)'(t) = \nabla f(g(t)) \cdot g'(t) = \sum_{i=1}^{n} \frac{\partial f}{\partial x_i}(g(t)) \cdot g_i'(t)$$</div></div>
-
-<div class="c c-ex"><div class="badge be">Exemple — Exo 5.33 (TP)</div><h3>\(f(x,y) = 3x^2y - y^3\) et \(g(t) = (t^2, t)\)</h3><div class="mbl">$$g'(t) = (2t,\ 1)$$</div><div class="mbl">$$\nabla f(x,y) = (6xy,\ 3x^2 - 3y^2)$$</div><div class="mbl">$$(f \circ g)'(t) = \nabla f(t^2, t) \cdot (2t,1) = (6t^3,\ 3t^4-3t^2) \cdot (2t,1) = 12t^4 + 3t^4 - 3t^2 = 15t^4 - 3t^2$$</div><p><strong>Vérification directe :</strong> \((f\circ g)(t) = 3t^5 - t^3 \Rightarrow (f\circ g)'(t) = 15t^4 - 3t^2\) ✓</p></div>
-
-<div class="c c-ex"><div class="badge be">Exemple 2</div><h3>\(f(x,y) = e^{2x+3y}\) et \(g(t) = (\cos t, \sin t)\)</h3><div class="mbl">$$g'(t) = (-\sin t,\ \cos t) \qquad \nabla f(x,y) = (2e^{2x+3y},\ 3e^{2x+3y})$$</div><div class="mbl">$$(f\circ g)'(t) = e^{2\cos t+3\sin t}\,(2,3)\cdot(-\sin t, \cos t) = e^{2\cos t+3\sin t}(-2\sin t + 3\cos t)$$</div></div>
-
-<div class="c-key c"><div class="badge bk">Application — Gradient ⊥ courbes de niveau (preuve)</div><h3>Pourquoi \(\nabla f \perp\) courbes de niveau</h3><p>Si \(\gamma\) est une courbe paramétrée <em>sur</em> la courbe de niveau \(k\) de \(f\), alors \(f(\gamma(t)) = k\) = constante. Par la règle de la chaîne :</p><div class="mbl">$$0 = (f \circ \gamma)'(t) = \nabla f(\gamma(t)) \cdot \gamma'(t)$$</div><p>Le produit scalaire est nul → \(\nabla f(\gamma(t))\) est <strong>perpendiculaire</strong> au vecteur tangent \(\gamma'(t)\) → gradient ⊥ courbe de niveau. ✓</p></div>
-
-<div class="qz"><h4>Quiz 10.1 🧠</h4><div class="qs">Avec \(f(x,y) = x^2 + y^2\) et \(g(t) = (\sin t, \cos t)\), que vaut \((f\circ g)'(t)\) ?</div><div class="qo-wrap"><button class="qo" onclick="q(this,true,'q10a')">0 (car \(f\circ g = 1\) constante)</button><button class="qo" onclick="q(this,false,'q10a')">\(2\sin t + 2\cos t\)</button><button class="qo" onclick="q(this,false,'q10a')">\(-2\sin t \cos t + 2\cos t\sin t\)</button></div><div class="qfb" id="q10a">✓ \(f(\sin t, \cos t) = \sin^2 t + \cos^2 t = 1\) → constante → dérivée = 0. Avec la règle de la chaîne : \(\nabla f\cdot g' = (2\sin t, 2\cos t)\cdot(\cos t, -\sin t) = 2\sin t\cos t - 2\cos t\sin t = 0\). ✓</div></div>
-<div class="pnav"><button class="btn btn-prev" onclick="go(9)">← Précédent</button><button class="btn btn-next" onclick="go(11)">Suivant →</button></div>
-</div>
-
-<!-- ══ 11 PLUS GRANDE PENTE ══ -->
-<div class="pg" id="p11">
-<div class="ph"><div class="chip">Section 11</div><h2>Gradient &amp; Plus grande pente</h2><p class="lead">Le gradient indique non seulement la dérivée directionnelle (via le produit scalaire), mais aussi la <em>direction</em> dans laquelle \(f\) croît le plus rapidement. C'est l'intuition clé derrière la descente de gradient en ML.</p></div>
-
-<div class="c c-def"><div class="badge bd">Proposition — Gradient ⊥ courbes de niveau</div><h3>\(\nabla f(a) \perp\) la courbe de niveau en \(a\)</h3><p>Soit \(f : A \subset \mathbb{R}^n \to \mathbb{R}\) différentiable. Alors le gradient \(\nabla f(a)\) est <strong>perpendiculaire</strong> aux courbes de niveau de \(f\) en chaque point \(a\).</p><p><em>Preuve : via la règle de la chaîne — voir section 10.</em></p></div>
-
-<div class="c c-def"><div class="badge bd">Proposition — Direction de plus grande variation</div><h3>\(\nabla f(a)\) = direction de montée maximale</h3><p>Soit \(f\) différentiable en \(a\). Pour tout \(\vec{v} \in \mathbb{R}^n\) :</p><div class="mbl">$$\frac{\partial f}{\partial \vec{v}}(a) \le \|\vec{v}\| \cdot \|\nabla f(a)\|$$</div><p>avec égalité si et seulement si \(\vec{v}\) et \(\nabla f(a)\) sont proportionnels (même direction).</p><div class="c-key" style="margin-top:10px;padding:.75rem 1rem;"><p>Parmi les vecteurs de norme 1, le vecteur \(\dfrac{\nabla f(a)}{\|\nabla f(a)\|}\) maximise la dérivée directionnelle. <strong>\(\nabla f(a)\) pointe vers la direction de plus forte croissance de \(f\).</strong></p></div></div>
-
-<div class="c-geo c"><div class="badge be">Résumé — Tout ce que tu dois savoir sur \(\nabla f\)</div><h3>5 propriétés fondamentales</h3><ul><li>✅ \(\nabla f(a) = (\partial f/\partial x_1(a), \ldots, \partial f/\partial x_n(a))\)</li><li>✅ \(\partial f/\partial \vec{v}(a) = \nabla f(a) \cdot \vec{v}\) (Prop 5.58, si \(f\) diff.)</li><li>✅ \(\nabla f(a) \perp\) courbes de niveau de \(f\) en \(a\)</li><li>✅ \(\nabla f(a)\) pointe vers la <strong>direction de plus forte croissance</strong></li><li>✅ Si \(\nabla f(a) = \vec{0}\) → \(a\) est un point critique (extremum possible)</li></ul></div>
-
-<div class="c c-ex"><div class="badge be">Exemple — Exo 5.40</div><h3>Dans quelle direction \(f(x,y,z)=3x-2y+5z\) augmente-t-il le plus en \((6,7,8)\) ?</h3><div class="mbl">$$\nabla f = (3, -2, 5) \quad \text{(constant)}$$</div><p>Direction de plus grande croissance : \(\dfrac{(3,-2,5)}{\|(3,-2,5)\|} = \dfrac{(3,-2,5)}{\sqrt{38}}\)</p><p>Valeur maximale de \(D_{\vec{v}}f\) (avec \(\|\vec{v}\|=1\)) : \(\|\nabla f\| = \sqrt{9+4+25} = \sqrt{38}\)</p></div>
-
-<hr class="sep">
-<div class="c" style="border:2px solid var(--indigo);"><div class="badge bk">🏆 Quiz final — Style examen complet</div><h3>Soit \(f(x,y) = x^2 - xy - y^2\)</h3><p><strong>(a)</strong> Montre que \(f\) est différentiable sur \(\mathbb{R}^2\).</p><p><strong>(b)</strong> Calcule \(D_{\vec{v}} f(x,y)\) pour \(\vec{v} = (1/2,\ \sqrt{3}/2)\).</p><p><strong>(c)</strong> Trouve les points où cette dérivée directionnelle est nulle.</p><textarea class="scratch" placeholder="Écris ta solution ici..."></textarea><button class="rbtn" onclick="rvl('rf')">Voir la correction complète</button><div class="rvl" id="rf"><div class="c-prof" style="margin-top:10px;"><p><strong>(a)</strong> \(\partial_x f = 2x-y\) (polynomial, continu) ; \(\partial_y f = -x-2y\) (polynomial, continu). Par Thm 5.64(3), \(f\) est différentiable sur \(\mathbb{R}^2\). ✓</p><p><strong>(b)</strong> \(\nabla f(x,y) = (2x-y,\ -x-2y)\). Par Prop. 5.58 :</p><div class="mbl">$$D_{(1/2,\sqrt{3}/2)} f = (2x-y)\cdot\tfrac{1}{2} + (-x-2y)\cdot\tfrac{\sqrt{3}}{2} = x(1-\sqrt{3}) - y(\tfrac{1}{2}+\sqrt{3}) \cdot 2 \cdots$$</div><p>Plus précisément : \(= \frac{2x-y}{2} + \frac{(-x-2y)\sqrt{3}}{2} = \frac{(2-\sqrt{3})x-(1+2\sqrt{3})y}{2}\)</p><p><strong>(c)</strong> \(D_{\vec{v}}f = 0\) quand \(\nabla f \perp \vec{v}\), i.e. sur la droite \((2-\sqrt{3})x = (1+2\sqrt{3})y\).</p></div></div></div>
-
-<div class="hl"><p>🎉 <strong>Chapitre 5 terminé !</strong> Ce que tu dois maîtriser : les définitions (composantes, courbe paramétrée, courbe de niveau, boule, intérieur/adhérence, limite, différentiabilité, dérivée directionnelle), le <strong>Thm 5.64(3)</strong> pour la diff., la <strong>Prop 5.58</strong> pour les dérivées dir., et la <strong>règle de la chaîne</strong>. Le reste = ces trois blocs + calcul de dérivées.</p></div>
-
-<div class="pnav"><button class="btn btn-prev" onclick="go(10)">← Précédent</button><span style="font-size:13px;color:var(--green);font-weight:700;">✓ Cours terminé !</span></div>
-</div>
-
-</main>
-
-<script>
-// ── Navigation ──
-const TOTAL = 12;
-const visited = new Set([0]);
-const navItems = document.querySelectorAll('.ni');
-
-function go(n) {
-  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
-  document.getElementById('p' + n).classList.add('on');
-  navItems.forEach((it, i) => {
-    it.classList.remove('on');
-    if (i === n) it.classList.add('on');
-    else if (visited.has(i)) it.classList.add('done');
-  });
-  visited.add(n);
-  updateProg();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (n === 3) setTimeout(drawLC, 80);
-  if (n === 9) setTimeout(drawGF, 80);
-}
-
-function updateProg() {
-  const pct = Math.round((visited.size / TOTAL) * 100);
-  document.getElementById('pf').style.width = pct + '%';
-  document.getElementById('pt').textContent = visited.size + ' / ' + TOTAL + ' sections visitées';
-}
-
-// ── Quiz ──
-function q(btn, correct, fbId) {
-  const wrap = btn.closest('.qo-wrap');
-  wrap.querySelectorAll('.qo').forEach(b => { b.disabled = true; });
-  btn.classList.add(correct ? 'ok' : 'no');
-  if (!correct) {
-    wrap.querySelectorAll('.qo').forEach(b => {
-      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes('true,')) b.classList.add('ok');
-    });
-  }
-  const fb = document.getElementById(fbId);
-  if (fb) { fb.className = 'qfb ' + (correct ? 'ok' : 'no') + ' show'; }
-}
-
-function rvl(id) {
-  const el = document.getElementById(id);
-  el.classList.toggle('on');
-  el.previousElementSibling.textContent = el.classList.contains('on') ? 'Masquer la correction' : 'Voir la correction complète';
-}
-
-// ── Canvas: Level Curves (marching squares) ──
-const lcFns = {
-  p: { f: (x,y) => x*x+y*y, levels: [0.5,1,2,3,4,6,8] },
-  s: { f: (x,y) => x*x-y*y, levels: [-6,-4,-2,-1,0,1,2,4,6] },
-  l: { f: (x,y) => x+y, levels: [-4,-3,-2,-1,0,1,2,3,4] },
-  xy: { f: (x,y) => x*y, levels: [-4,-3,-2,-1,-0.5,0.5,1,2,3,4] }
-};
-const lcColors = ['#7C3AED','#2563EB','#0891B2','#059669','#65A30D','#D97706','#DC2626','#9D174D','#4338CA','#0E7490'];
-
-function marchSquares(ctx, vals, rows, cols, k, xr, yr, W, H) {
-  function ts(ci, ri) { return [(ci/cols)*W, (ri/rows)*H]; }
-  ctx.beginPath();
-  for (let j = 0; j < rows-1; j++) {
-    for (let i = 0; i < cols-1; i++) {
-      const v00=vals[j][i], v10=vals[j][i+1], v01=vals[j+1][i], v11=vals[j+1][i+1];
-      const pts = [];
-      if ((v00<k)!==(v10<k)) { const t=(k-v00)/(v10-v00); pts.push(ts(i+t,j)); }
-      if ((v10<k)!==(v11<k)) { const t=(k-v10)/(v11-v10); pts.push(ts(i+1,j+t)); }
-      if ((v00<k)!==(v01<k)) { const t=(k-v00)/(v01-v00); pts.push(ts(i,j+t)); }
-      if ((v01<k)!==(v11<k)) { const t=(k-v01)/(v11-v01); pts.push(ts(i+t,j+1)); }
-      if (pts.length >= 2) { ctx.moveTo(pts[0][0],pts[0][1]); ctx.lineTo(pts[1][0],pts[1][1]); }
-    }
-  }
-  ctx.stroke();
-}
-
-function drawLC() {
-  const canvas = document.getElementById('lcC'); if (!canvas) return;
-  const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle = '#F8FAFC'; ctx.fillRect(0,0,W,H);
-  const key = document.getElementById('lcF').value;
-  const fn = lcFns[key] || lcFns['p'];
-  const XR=4, YR=3, cols=200, rows=150;
-  const vals = [];
-  for (let j=0;j<rows;j++){vals.push([]);for(let i=0;i<cols;i++){const x=-XR+2*XR*i/(cols-1),y=YR-2*YR*j/(rows-1);vals[j].push(fn.f(x,y));}}
-  // axes
-  ctx.strokeStyle='#CBD5E1'; ctx.lineWidth=1;
-  ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
-  // labels
-  ctx.fillStyle='#94A3B8'; ctx.font='11px Nunito,sans-serif';
-  ctx.fillText('x',W-14,H/2-5); ctx.fillText('y',W/2+5,8);
-  // level curves
-  fn.levels.forEach((k,li) => {
-    ctx.strokeStyle = lcColors[li % lcColors.length];
-    ctx.lineWidth = 1.8; ctx.globalAlpha = 0.8;
-    marchSquares(ctx,vals,rows,cols,k,XR,YR,W,H);
-  });
-  ctx.globalAlpha = 1;
-}
-
-// ── Canvas: Gradient Field ──
-const gfFns = {
-  p:  { f:(x,y)=>x*x+y*y, gx:(x,y)=>2*x, gy:(x,y)=>2*y, levels:[0.5,1,2,3,5,8] },
-  s:  { f:(x,y)=>x*x-y*y, gx:(x,y)=>2*x, gy:(x,y)=>-2*y, levels:[-6,-3,-1,0,1,3,6] },
-  l:  { f:(x,y)=>x+y, gx:()=>1, gy:()=>1, levels:[-4,-2,-1,0,1,2,4] },
-  xy: { f:(x,y)=>x*y, gx:(x,y)=>y, gy:(x,y)=>x, levels:[-4,-2,-1,-0.5,0.5,1,2,4] }
-};
-
-function drawGF() {
-  const canvas = document.getElementById('gfC'); if (!canvas) return;
-  const ctx = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
-  ctx.clearRect(0,0,W,H); ctx.fillStyle='#F8FAFC'; ctx.fillRect(0,0,W,H);
-  const key = document.getElementById('gfF').value;
-  const fn = gfFns[key] || gfFns['p'];
-  const XR=3, YR=3, cols=180, rows=135;
-  function ts(x,y){return[(x/XR+1)*W/2,(1-y/YR)*H/2];}
-  const vals=[];
-  for(let j=0;j<rows;j++){vals.push([]);for(let i=0;i<cols;i++){const x=-XR+2*XR*i/(cols-1),y=YR-2*YR*j/(rows-1);vals[j].push(fn.f(x,y));}}
-  // axes
-  ctx.strokeStyle='#E2E8F0'; ctx.lineWidth=1;
-  const[ax,ay]=ts(0,-YR),[ax2,ay2]=ts(0,YR); ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax2,ay2);ctx.stroke();
-  const[bx,by]=ts(-XR,0),[bx2,by2]=ts(XR,0); ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(bx2,by2);ctx.stroke();
-  // level curves (gray)
-  ctx.lineWidth=1; ctx.globalAlpha=0.5;
-  fn.levels.forEach((k,li) => {
-    ctx.strokeStyle='#94A3B8';
-    marchSquares(ctx,vals,rows,cols,k,XR,YR,W,H);
-  });
-  ctx.globalAlpha=1;
-  // gradient arrows
-  const step=0.55;
-  for(let x=-XR+step/2;x<XR;x+=step){for(let y=-YR+step/2;y<YR;y+=step){
-    const gx=fn.gx(x,y), gy=fn.gy(x,y);
-    const mag=Math.sqrt(gx*gx+gy*gy); if(mag<0.01) continue;
-    const scale=0.22;
-    const[sx,sy]=ts(x,y);
-    const[ex,ey]=ts(x+gx/mag*scale, y+gy/mag*scale);
-    ctx.strokeStyle='#0284C7'; ctx.lineWidth=1.5; ctx.globalAlpha=0.85;
-    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.stroke();
-    const ang=Math.atan2(ey-sy,ex-sx), al=7, aa=0.45;
-    ctx.fillStyle='#0284C7';
-    ctx.beginPath();
-    ctx.moveTo(ex,ey);
-    ctx.lineTo(ex-al*Math.cos(ang-aa), ey-al*Math.sin(ang-aa));
-    ctx.lineTo(ex-al*Math.cos(ang+aa), ey-al*Math.sin(ang+aa));
-    ctx.closePath(); ctx.fill();
-    ctx.globalAlpha=1;
-  }}
-}
-
-updateProg();
-</script>
 </body>
 </html>
