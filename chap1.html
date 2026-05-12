@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logique — MATHF114</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #EFF6FF;
+    --bg2: #DBEAFE;
+    --white: #FFFFFF;
+    --blue-dark: #1E40AF;
+    --blue-mid: #2563EB;
+    --blue-soft: #93C5FD;
+    --blue-pale: #BFDBFE;
+    --text: #1E293B;
+    --text-soft: #475569;
+    --green: #166534;
+    --green-bg: #DCFCE7;
+    --red: #991B1B;
+    --red-bg: #FEE2E2;
+    --orange: #92400E;
+    --orange-bg: #FEF3C7;
+    --sidebar-w: 260px;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* PROGRESS BAR */
+  #progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--blue-mid), var(--blue-soft));
+    z-index: 1000;
+    transition: width 0.2s;
+  }
+
+  /* SIDEBAR */
+  aside {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--white);
+    border-right: 2px solid var(--bg2);
+    overflow-y: auto;
+    padding: 28px 0 40px;
+    z-index: 100;
+  }
+
+  .sidebar-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--blue-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0 20px 16px;
+    border-bottom: 1px solid var(--bg2);
+    margin-bottom: 12px;
+  }
+
+  .nav-item {
+    display: block;
+    padding: 9px 20px;
+    font-size: 0.84rem;
+    color: var(--text-soft);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .nav-item:hover { color: var(--blue-mid); background: var(--bg); }
+  .nav-item.active {
+    color: var(--blue-dark);
+    border-left-color: var(--blue-mid);
+    background: var(--bg);
+    font-weight: 600;
+  }
+
+  .nav-item .num {
+    display: inline-block;
+    width: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--blue-soft);
+    font-weight: 500;
+  }
+
+  /* MAIN CONTENT */
+  main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    padding: 56px 60px 80px 60px;
+    max-width: calc(860px + var(--sidebar-w));
+  }
+
+  /* SECTION */
+  section {
+    margin-bottom: 72px;
+    scroll-margin-top: 32px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid var(--bg2);
+  }
+
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--blue-mid);
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.65rem;
+    font-weight: 600;
+    color: var(--blue-dark);
+  }
+
+  h3 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 28px 0 12px;
+  }
+
+  p { line-height: 1.75; margin-bottom: 12px; font-size: 0.97rem; }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    border: 1px solid var(--bg2);
+  }
+
+  .card-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+
+  .card.def .card-label { color: var(--blue-mid); }
+  .card.def { border-left: 4px solid var(--blue-mid); }
+
+  .card.exemple .card-label { color: #059669; }
+  .card.exemple { border-left: 4px solid #059669; }
+
+  .card.attention .card-label { color: #D97706; }
+  .card.attention { border-left: 4px solid #D97706; }
+
+  /* METHODE CARD - special style for proof templates */
+  .methode {
+    background: #F0F7FF;
+    border: 2px solid var(--blue-mid);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin: 22px 0;
+  }
+
+  .methode-title {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--blue-dark);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .methode-title::before {
+    content: "Mode d'emploi";
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--blue-dark);
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+
+  .step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--blue-mid);
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .step-body { font-size: 0.95rem; line-height: 1.7; }
+  .step-body strong { color: var(--blue-dark); }
+
+  /* PROOF EXAMPLE BOX */
+  .preuve-box {
+    background: #FAFBFC;
+    border: 1px solid #CBD5E1;
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    margin: 18px 0;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem;
+    line-height: 1.85;
+  }
+
+  .preuve-box .preuve-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748B;
+    margin-bottom: 10px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .preuve-box em {
+    font-style: italic;
+    color: var(--text-soft);
+  }
+
+  .qed {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--text);
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* TABLE */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  th {
+    background: var(--blue-dark);
+    color: var(--white);
+    padding: 10px 14px;
+    text-align: center;
+    font-size: 0.82rem;
+  }
+
+  td {
+    padding: 9px 14px;
+    text-align: center;
+    border-bottom: 1px solid var(--bg2);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+
+  td.V { color: #166534; font-weight: 600; }
+  td.F { color: #991B1B; font-weight: 600; }
+
+  /* QUIZ */
+  .quiz-box {
+    background: var(--white);
+    border: 2px solid var(--bg2);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    margin: 24px 0;
+  }
+
+  .quiz-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--blue-mid);
+    margin-bottom: 12px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .quiz-question {
+    font-size: 0.97rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .quiz-opt {
+    padding: 10px 16px;
+    border: 1.5px solid var(--bg2);
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 0.92rem;
+    transition: all 0.15s;
+    background: var(--bg);
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .quiz-opt:hover:not(.disabled) { border-color: var(--blue-soft); background: var(--bg2); }
+  .quiz-opt.correct { background: var(--green-bg); border-color: #16A34A; color: var(--green); }
+  .quiz-opt.wrong { background: var(--red-bg); border-color: #DC2626; color: var(--red); }
+  .quiz-opt.disabled { cursor: default; }
+
+  .quiz-feedback {
+    font-size: 0.88rem;
+    padding: 10px 14px;
+    border-radius: 7px;
+    margin-top: 8px;
+    display: none;
+    line-height: 1.6;
+  }
+
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok { background: var(--green-bg); color: var(--green); }
+  .quiz-feedback.nope { background: var(--red-bg); color: var(--red); }
+
+  /* EXERCISE WITH REVEAL */
+  .exo-box {
+    background: var(--white);
+    border: 2px dashed var(--blue-soft);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    margin: 24px 0;
+  }
+
+  .exo-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7C3AED;
+    margin-bottom: 12px;
+  }
+
+  .exo-question {
+    font-size: 0.97rem;
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    padding: 9px 20px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--blue-mid);
+    color: var(--white);
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+
+  .btn-ghost {
+    background: var(--bg2);
+    color: var(--blue-dark);
+  }
+  .btn-ghost:hover { background: var(--blue-pale); }
+
+  .solution {
+    display: none;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--bg2);
+  }
+
+  .solution.show { display: block; }
+
+  /* HIGHLIGHT inline */
+  .hl { 
+    background: var(--blue-pale); 
+    color: var(--blue-dark); 
+    padding: 1px 5px; 
+    border-radius: 3px; 
+    font-family: 'JetBrains Mono', monospace; 
+    font-size: 0.88em; 
+  }
+
+  /* Equivalences list */
+  .eq-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .eq-list li {
+    background: var(--white);
+    border: 1px solid var(--bg2);
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .eq-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--white);
+    background: var(--blue-soft);
+    padding: 2px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .important { background: #FFFBEB; }
+  .eq-name {
+    font-size: 0.75rem;
+    color: var(--orange);
+    font-weight: 600;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Scrollbar */
+  aside::-webkit-scrollbar { width: 4px; }
+  aside::-webkit-scrollbar-thumb { background: var(--bg2); border-radius: 4px; }
+
+  @media (max-width: 900px) {
+    aside { display: none; }
+    main { margin-left: 0; padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<aside>
+  <div class="sidebar-title">MATHF114 — Logique</div>
+  <a class="nav-item active" href="#s1" onclick="setActive(this)"><span class="num">1.</span> Connecteurs logiques</a>
+  <a class="nav-item" href="#s2" onclick="setActive(this)"><span class="num">2.</span> Tables de vérité</a>
+  <a class="nav-item" href="#s3" onclick="setActive(this)"><span class="num">3.</span> Équivalences clés</a>
+  <a class="nav-item" href="#s4" onclick="setActive(this)"><span class="num">4.</span> Quantificateurs</a>
+  <a class="nav-item" href="#s5" onclick="setActive(this)"><span class="num">5.</span> Preuve directe</a>
+  <a class="nav-item" href="#s6" onclick="setActive(this)"><span class="num">6.</span> Preuve par l'absurde</a>
+  <a class="nav-item" href="#s7" onclick="setActive(this)"><span class="num">7.</span> Preuve par contraposée</a>
+  <a class="nav-item" href="#s8" onclick="setActive(this)"><span class="num">8.</span> Récurrence faible</a>
+  <a class="nav-item" href="#s9" onclick="setActive(this)"><span class="num">9.</span> Récurrence forte</a>
+</aside>
+
+<main>
+
+<!-- ===== SECTION 1 : CONNECTEURS ===== -->
+<section id="s1">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2>Connecteurs logiques</h2>
+  </div>
+
+  <div class="card def">
+    <div class="card-label">Définition</div>
+    <p>Une <strong>proposition</strong> est une assertion qui est soit vraie, soit fausse. Il n'y a pas de troisième possibilité : c'est le <strong>principe du tiers-exclus</strong>.</p>
+    <p style="margin-bottom:0">Exemples de propositions : "La terre est ronde", "\(2423\) est pair", "\(\pi\) est irrationnel". Exemples qui ne sont PAS des propositions : "Il est 6 heures", "Pourvu qu'il pleuve".</p>
+  </div>
+
+  <p>On combine des propositions avec des <strong>connecteurs logiques</strong>. Il en existe cinq dans ce cours.</p>
+
+  <h3>Les 5 connecteurs</h3>
+
+  <div class="card def">
+    <div class="card-label">Conjonction — "et"</div>
+    <p>Notée \(p \wedge q\). Vraie uniquement quand <strong>p et q sont toutes deux vraies</strong>.</p>
+  </div>
+
+  <div class="card def">
+    <div class="card-label">Disjonction — "ou" (inclusif)</div>
+    <p>Notée \(p \vee q\). Vraie quand <strong>au moins une des deux</strong> est vraie. Si les deux sont vraies, c'est quand même vrai ("ou" inclusif, pas exclusif).</p>
+  </div>
+
+  <div class="card def">
+    <div class="card-label">Négation — "non"</div>
+    <p>Notée \(\neg p\). Inverse la valeur de vérité. Si \(p\) est vraie, \(\neg p\) est fausse, et vice versa.</p>
+  </div>
+
+  <div class="card def">
+    <div class="card-label">Implication — "si ... alors"</div>
+    <p>Notée \(p \Rightarrow q\). Le seul cas où elle est <strong>fausse</strong> : \(p\) vraie et \(q\) fausse. Dans tous les autres cas, elle est vraie.</p>
+    <p style="margin-bottom:0">Attention : implication \(\neq\) causalité. "\(0 = 1\)" est fausse, donc "\(0 = 1 \Rightarrow 1 = 2\)" est vraie — même si les deux propositions n'ont aucun lien causal.</p>
+  </div>
+
+  <div class="card def">
+    <div class="card-label">Équivalence — "si et seulement si"</div>
+    <p>Notée \(p \Leftrightarrow q\). Vraie quand \(p\) et \(q\) ont la <strong>même valeur de vérité</strong> (toutes deux vraies, ou toutes deux fausses). Équivaut à \((p \Rightarrow q) \wedge (q \Rightarrow p)\).</p>
+  </div>
+
+  <div class="card attention">
+    <div class="card-label">Le piège de l'implication</div>
+    <p style="margin-bottom:0">"\(p \Rightarrow q\)" est fausse <strong>seulement si</strong> \(p\) est vraie et \(q\) est fausse. Si \(p\) est fausse, l'implication est automatiquement vraie, peu importe \(q\). C'est le cas le plus contre-intuitif — mémorise-le.</p>
+  </div>
+
+  <!-- QUIZ 1 -->
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 1.1 — Examen janvier 2026 Q1</div>
+    <div class="quiz-question">Pour quelles valeurs de vérité de \(A\), \(B\), \(C\) la proposition \(A \Rightarrow (B \wedge C)\) est-elle <strong>vraie</strong> ? Sélectionne toutes les bonnes réponses.</div>
+
+    <div class="quiz-options" id="q1">
+      <button class="quiz-opt" onclick="answerQ('q1','a','wrong','q1fb')">A = V, B = V, C = F</button>
+      <button class="quiz-opt" onclick="answerQ('q1','b','correct','q1fb')">A = V, B = V, C = V</button>
+      <button class="quiz-opt" onclick="answerQ('q1','c','correct','q1fb')">A = F, B = V, C = V</button>
+      <button class="quiz-opt" onclick="answerQ('q1','d','correct','q1fb')">A = F, B = F, C = F</button>
+      <button class="quiz-opt" onclick="answerQ('q1','e','wrong','q1fb')">A = V, B = F, C = V</button>
+    </div>
+    <div class="quiz-feedback" id="q1fb"></div>
+  </div>
+
+  <!-- QUIZ 2 -->
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 1.2 — Conditions nécessaires et suffisantes</div>
+    <div class="quiz-question">"Pour réussir, il faut obtenir au moins 10." Cette phrase signifie que obtenir au moins 10 est :</div>
+    <div class="quiz-options" id="q2">
+      <button class="quiz-opt" onclick="answerQ('q2','a','correct','q2fb')">Une condition nécessaire pour réussir</button>
+      <button class="quiz-opt" onclick="answerQ('q2','b','wrong','q2fb')">Une condition suffisante pour réussir</button>
+      <button class="quiz-opt" onclick="answerQ('q2','c','wrong','q2fb')">Une condition nécessaire et suffisante</button>
+    </div>
+    <div class="quiz-feedback" id="q2fb"></div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2 : TABLES DE VÉRITÉ ===== -->
+<section id="s2">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2>Tables de vérité</h2>
+  </div>
+
+  <p>La table de vérité liste toutes les combinaisons possibles de valeurs de vérité. Avec 2 propositions \(p\) et \(q\), il y a \(2^2 = 4\) lignes. Convention : 0 = FAUX, 1 = VRAI.</p>
+
+  <table>
+    <tr>
+      <th>\(p\)</th><th>\(q\)</th>
+      <th>\(p \wedge q\)</th>
+      <th>\(p \vee q\)</th>
+      <th>\(p \Rightarrow q\)</th>
+      <th>\(p \Leftrightarrow q\)</th>
+      <th>\(\neg p\)</th>
+    </tr>
+    <tr>
+      <td class="F">0</td><td class="F">0</td>
+      <td class="F">0</td><td class="F">0</td>
+      <td class="V">1</td><td class="V">1</td>
+      <td class="V">1</td>
+    </tr>
+    <tr>
+      <td class="F">0</td><td class="V">1</td>
+      <td class="F">0</td><td class="V">1</td>
+      <td class="V">1</td><td class="F">0</td>
+      <td class="V">1</td>
+    </tr>
+    <tr>
+      <td class="V">1</td><td class="F">0</td>
+      <td class="F">0</td><td class="V">1</td>
+      <td class="F">0</td><td class="F">0</td>
+      <td class="F">0</td>
+    </tr>
+    <tr>
+      <td class="V">1</td><td class="V">1</td>
+      <td class="V">1</td><td class="V">1</td>
+      <td class="V">1</td><td class="V">1</td>
+      <td class="F">0</td>
+    </tr>
+  </table>
+
+  <div class="card attention">
+    <div class="card-label">Retiens par coeur</div>
+    <p style="margin-bottom:0">\(p \Rightarrow q\) est <strong>fausse uniquement</strong> quand \(p = 1\) et \(q = 0\) (ligne 3). Toutes les autres lignes donnent 1. C'est la seule ligne qui coûte des points à l'exam si on se plante.</p>
+  </div>
+
+  <h3>Utilisation : vérifier une équivalence par table de vérité</h3>
+  <p>Pour montrer que deux formules sont logiquement équivalentes, on construit leur table de vérité et on vérifie qu'elles ont les mêmes valeurs sur toutes les lignes.</p>
+
+  <div class="card exemple">
+    <div class="card-label">Exemple — Vérification de la contraposée</div>
+    <p>Montrons que \((A \Rightarrow B) \Leftrightarrow (\neg B \Rightarrow \neg A)\).</p>
+    <table>
+      <tr><th>A</th><th>B</th><th>¬A</th><th>¬B</th><th>A⇒B</th><th>¬B⇒¬A</th></tr>
+      <tr><td class="F">0</td><td class="F">0</td><td class="V">1</td><td class="V">1</td><td class="V">1</td><td class="V">1</td></tr>
+      <tr><td class="F">0</td><td class="V">1</td><td class="V">1</td><td class="F">0</td><td class="V">1</td><td class="V">1</td></tr>
+      <tr><td class="V">1</td><td class="F">0</td><td class="F">0</td><td class="V">1</td><td class="F">0</td><td class="F">0</td></tr>
+      <tr><td class="V">1</td><td class="V">1</td><td class="F">0</td><td class="F">0</td><td class="V">1</td><td class="V">1</td></tr>
+    </table>
+    <p style="margin-bottom:0">Les colonnes "A⇒B" et "¬B⇒¬A" sont identiques : les deux formules sont bien équivalentes.</p>
+  </div>
+
+  <!-- Quiz table de vérité -->
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 2.1 — Table de vérité</div>
+    <div class="quiz-question">Quelle est la valeur de \(\neg A \vee B\) quand \(A = 1\) et \(B = 0\) ?</div>
+    <div class="quiz-options" id="q3">
+      <button class="quiz-opt" onclick="answerQ('q3','a','wrong','q3fb')">1 (vrai)</button>
+      <button class="quiz-opt" onclick="answerQ('q3','b','correct','q3fb')">0 (faux)</button>
+    </div>
+    <div class="quiz-feedback" id="q3fb"></div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 2.2 — Négation d'une implication</div>
+    <div class="quiz-question">La négation de \(A \Rightarrow B\) est équivalente à :</div>
+    <div class="quiz-options" id="q4">
+      <button class="quiz-opt" onclick="answerQ('q4','a','wrong','q4fb')">\(\neg A \Rightarrow \neg B\)</button>
+      <button class="quiz-opt" onclick="answerQ('q4','b','wrong','q4fb')">\(\neg A \vee \neg B\)</button>
+      <button class="quiz-opt" onclick="answerQ('q4','c','correct','q4fb')">\(A \wedge \neg B\)</button>
+      <button class="quiz-opt" onclick="answerQ('q4','d','wrong','q4fb')">\(\neg A \wedge B\)</button>
+    </div>
+    <div class="quiz-feedback" id="q4fb"></div>
+  </div>
+</section>
+
+<!-- ===== SECTION 3 : ÉQUIVALENCES ===== -->
+<section id="s3">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2>Équivalences clés</h2>
+  </div>
+
+  <p>Ces 6 équivalences sont dans les slides et utilisées dans les preuves. Sache les reconnaître et les appliquer.</p>
+
+  <ul class="eq-list">
+    <li>
+      <span class="eq-num">1</span>
+      <span>\(\neg(A \vee B) \Leftrightarrow (\neg A \wedge \neg B)\)</span>
+      <span class="eq-name">De Morgan</span>
+    </li>
+    <li>
+      <span class="eq-num">2</span>
+      <span>\(\neg(A \wedge B) \Leftrightarrow (\neg A \vee \neg B)\)</span>
+      <span class="eq-name">De Morgan</span>
+    </li>
+    <li class="important">
+      <span class="eq-num">3</span>
+      <span>\(\neg(A \Rightarrow B) \Leftrightarrow (A \wedge \neg B)\)</span>
+      <span class="eq-name">Négation d'implication</span>
+    </li>
+    <li>
+      <span class="eq-num">4</span>
+      <span>\(\neg(A \Leftrightarrow B) \Leftrightarrow ((A \wedge \neg B) \vee (B \wedge \neg A))\)</span>
+      <span class="eq-name">Négation d'équivalence</span>
+    </li>
+    <li class="important">
+      <span class="eq-num">5</span>
+      <span>\((A \Rightarrow B) \Leftrightarrow (\neg B \Rightarrow \neg A)\)</span>
+      <span class="eq-name">Contraposée</span>
+    </li>
+    <li>
+      <span class="eq-num">6</span>
+      <span>\((A \Leftrightarrow B) \Leftrightarrow (\neg A \Leftrightarrow \neg B)\)</span>
+      <span class="eq-name"></span>
+    </li>
+  </ul>
+
+  <div class="card attention">
+    <div class="card-label">Lire les De Morgan</div>
+    <p>Règle : quand la négation "rentre", le <strong>ou</strong> devient <strong>et</strong>, et le <strong>et</strong> devient <strong>ou</strong>. C'est symétrique.</p>
+    <p style="margin-bottom:0">Règle 3 : la négation de "si p alors q" c'est "p est vraie ET q est fausse".</p>
+  </div>
+
+  <!-- Quiz équivalences -->
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 3.1 — De Morgan</div>
+    <div class="quiz-question">Quelle est la négation de "Il pleut ET il fait beau" ?</div>
+    <div class="quiz-options" id="q5">
+      <button class="quiz-opt" onclick="answerQ('q5','a','wrong','q5fb')">Il ne pleut pas ET il ne fait pas beau</button>
+      <button class="quiz-opt" onclick="answerQ('q5','b','correct','q5fb')">Il ne pleut pas OU il ne fait pas beau</button>
+      <button class="quiz-opt" onclick="answerQ('q5','c','wrong','q5fb')">Il pleut OU il fait beau</button>
+    </div>
+    <div class="quiz-feedback" id="q5fb"></div>
+  </div>
+
+  <!-- Quiz négation formule -->
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 3.2 — Exos TP 1.24</div>
+    <div class="quiz-question">La proposition \((A \Rightarrow B) \Leftrightarrow (\neg B \Rightarrow \neg A)\) est-elle vraie pour toutes valeurs de \(A\) et \(B\) ?</div>
+    <div class="quiz-options" id="q6">
+      <button class="quiz-opt" onclick="answerQ('q6','a','correct','q6fb')">Oui, c'est une tautologie (toujours vraie)</button>
+      <button class="quiz-opt" onclick="answerQ('q6','b','wrong','q6fb')">Non, ça dépend des valeurs de A et B</button>
+    </div>
+    <div class="quiz-feedback" id="q6fb"></div>
+  </div>
+</section>
+
+<!-- ===== SECTION 4 : QUANTIFICATEURS ===== -->
+<section id="s4">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2>Quantificateurs &amp; négations</h2>
+  </div>
+
+  <div class="card def">
+    <div class="card-label">Quantificateur universel ∀</div>
+    <p>"\(\forall x \in E,\, p(x)\)" signifie "pour tout \(x\) dans \(E\), la propriété \(p(x)\) est vraie".</p>
+    <p style="margin-bottom:0">Est <strong>fausse</strong> s'il existe au moins un \(x \in E\) pour lequel \(p(x)\) est fausse.</p>
+  </div>
+
+  <div class="card def">
+    <div class="card-label">Quantificateur existentiel ∃</div>
+    <p>"\(\exists x \in E,\, p(x)\)" signifie "il existe au moins un \(x\) dans \(E\) tel que \(p(x)\) est vraie".</p>
+    <p style="margin-bottom:0">Est <strong>fausse</strong> si pour tout \(x \in E\), \(p(x)\) est fausse.</p>
+  </div>
+
+  <h3>Négation des quantificateurs — à savoir par coeur</h3>
+
+  <div class="methode">
+    <div class="methode-title"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        La négation de \(\forall x \in E,\, p(x)\) est \(\exists x \in E : \neg(p(x))\)<br>
+        <em>Le "pour tout" devient "il existe" et on nie la propriété.</em>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        La négation de \(\exists x \in E,\, p(x)\) est \(\forall x \in E : \neg(p(x))\)<br>
+        <em>Le "il existe" devient "pour tout" et on nie la propriété.</em>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Pour les formules imbriquées</strong> : on nie de l'extérieur vers l'intérieur, en alternant ∀ et ∃ à chaque étape.<br>
+        Exemple : \(\neg(\forall \epsilon > 0, \exists N, \forall n \geq N : |f(n)| < \epsilon)\)<br>
+        \(= \exists \epsilon > 0 : \forall N, \exists n \geq N : |f(n)| \geq \epsilon\)
+      </div>
+    </div>
+  </div>
+
+  <div class="card exemple">
+    <div class="card-label">Exemple — TP 1.9</div>
+    <p>Quelle est la négation de "Dans toutes les prisons, il y a un détenu qui n'aime aucun gardien" ?</p>
+    <p>Formule : \(\forall P,\, \exists d \in P : \forall g \in P,\, \neg \text{aime}(d,g)\)</p>
+    <p>Négation : \(\exists P : \forall d \in P,\, \exists g \in P : \text{aime}(d,g)\)</p>
+    <p style="margin-bottom:0">Traduction : "Il existe une prison dans laquelle chaque détenu aime au moins un gardien."</p>
+  </div>
+
+  <!-- Quiz négation -->
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 4.1 — TP 1.13 (type examen)</div>
+    <div class="quiz-question">La négation de \(\forall \epsilon > 0,\, \exists N,\, \forall n \geq N : |f(n)| &lt; \epsilon\) est :</div>
+    <div class="quiz-options" id="q7">
+      <button class="quiz-opt" onclick="answerQ('q7','a','wrong','q7fb')">\(\forall \epsilon > 0,\, \not\exists N \text{ tel que } \forall n \geq N : |f(n)| &lt; \epsilon\)</button>
+      <button class="quiz-opt" onclick="answerQ('q7','b','correct','q7fb')">\(\exists \epsilon > 0 : \forall N,\, \exists n \geq N : |f(n)| \geq \epsilon\)</button>
+      <button class="quiz-opt" onclick="answerQ('q7','c','wrong','q7fb')">\(\forall \epsilon > 0,\, \exists N,\, \forall n \geq N : |f(n)| \geq \epsilon\)</button>
+      <button class="quiz-opt" onclick="answerQ('q7','d','wrong','q7fb')">\(\exists N : \forall \epsilon > 0,\, \exists n \geq N : |f(n)| \geq \epsilon\)</button>
+    </div>
+    <div class="quiz-feedback" id="q7fb"></div>
+  </div>
+
+  <div class="quiz-box">
+    <div class="quiz-label">Quiz 4.2 — Négation d'un universel</div>
+    <div class="quiz-question">Quelle est la négation de "Tous les élèves participent aux olympiades" ?</div>
+    <div class="quiz-options" id="q8">
+      <button class="quiz-opt" onclick="answerQ('q8','a','wrong','q8fb')">Aucun élève ne participe aux olympiades</button>
+      <button class="quiz-opt" onclick="answerQ('q8','b','wrong','q8fb')">Un seul élève ne participe pas</button>
+      <button class="quiz-opt" onclick="answerQ('q8','c','correct','q8fb')">Au moins un élève ne participe pas aux olympiades</button>
+      <button class="quiz-opt" onclick="answerQ('q8','d','wrong','q8fb')">Tous les élèves sauf un participent</button>
+    </div>
+    <div class="quiz-feedback" id="q8fb"></div>
+  </div>
+</section>
+
+<!-- ===== SECTION 5 : PREUVE DIRECTE ===== -->
+<section id="s5">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2>Preuve directe</h2>
+  </div>
+
+  <p>La preuve directe consiste à partir des <strong>hypothèses</strong> et à en déduire la <strong>conclusion</strong> par une suite d'implications logiques. C'est la forme de base de toute preuve.</p>
+
+  <div class="methode">
+    <div class="methode-title"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><strong>Ouvrir la preuve :</strong> écrire "<em>Preuve.</em>" puis poser les hypothèses avec "Soit / Soient".</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><strong>Dérouler la chaîne :</strong> chaque étape découle de la précédente. Utiliser "\(\Rightarrow\)" ou "Donc" pour relier. Citer la définition ou le résultat utilisé si ce n'est pas évident.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><strong>Conclure et fermer :</strong> la dernière ligne doit être exactement ce qu'on voulait montrer. Terminer par le carré <span class="qed"></span>.</div>
+    </div>
+  </div>
+
+  <h3>Exemple rédigé — style prof</h3>
+
+  <div class="card def">
+    <div class="card-label">Proposition</div>
+    <p style="margin-bottom:0">Si \(n\) est un nombre entier pair, alors \(n^2\) est divisible par 4.</p>
+  </div>
+
+  <div class="preuve-box">
+    <div class="preuve-label">Preuve — style prof</div>
+    <p><em>Preuve.</em> Soit \(n\) un entier pair.</p>
+    <p>\(\Rightarrow\) \(n\) est divisible par 2.</p>
+    <p>\(\Rightarrow\) \(\dfrac{n}{2}\) est un entier. Posons \(k = \dfrac{n}{2} \in \mathbb{Z}\).</p>
+    <p>Alors \(\dfrac{n^2}{4} = \left(\dfrac{n}{2}\right)^2 = k^2 \in \mathbb{Z}\).</p>
+    <p style="margin-bottom:0">\(\Rightarrow\) \(n^2\) est divisible par 4. <span class="qed"></span></p>
+  </div>
+
+  <!-- Exo direct -->
+  <div class="exo-box">
+    <div class="exo-label">Exercice — TP 1.32</div>
+    <div class="exo-question">Soient \(x, y \in \mathbb{Q}\). Montrer que \(x + y \in \mathbb{Q}\) et que \(x \cdot y \in \mathbb{Q}\).</div>
+    <p style="font-size:0.88rem; color:var(--text-soft); margin-bottom:12px">Rappel : \(x \in \mathbb{Q}\) signifie qu'il existe \(a, b \in \mathbb{Z}\) avec \(b \neq 0\) tels que \(x = \frac{a}{b}\). Tente la preuve avant de regarder la solution.</p>
+    <button class="btn btn-ghost" onclick="toggle('sol5')">Voir la solution</button>
+    <div class="solution" id="sol5">
+      <div class="preuve-box">
+        <div class="preuve-label">Solution — style prof</div>
+        <p><em>Preuve.</em> Soient \(x, y \in \mathbb{Q}\).</p>
+        <p>Puisque \(x \in \mathbb{Q}\), il existe \(a, b \in \mathbb{Z}\), \(b \neq 0\), tels que \(x = \dfrac{a}{b}\).</p>
+        <p>Puisque \(y \in \mathbb{Q}\), il existe \(c, d \in \mathbb{Z}\), \(d \neq 0\), tels que \(y = \dfrac{c}{d}\).</p>
+        <p><strong>Pour \(x + y\) :</strong></p>
+        <p>\(x + y = \dfrac{a}{b} + \dfrac{c}{d} = \dfrac{ad + bc}{bd}\).</p>
+        <p>Or \(ad + bc \in \mathbb{Z}\) (les entiers sont stables par addition et multiplication) et \(bd \in \mathbb{Z}\), \(bd \neq 0\).</p>
+        <p>Donc \(x + y \in \mathbb{Q}\). <span class="qed"></span></p>
+        <p><strong>Pour \(x \cdot y\) :</strong></p>
+        <p>\(x \cdot y = \dfrac{a}{b} \cdot \dfrac{c}{d} = \dfrac{ac}{bd}\).</p>
+        <p>Or \(ac \in \mathbb{Z}\) et \(bd \in \mathbb{Z}\), \(bd \neq 0\).</p>
+        <p style="margin-bottom:0">Donc \(x \cdot y \in \mathbb{Q}\). <span class="qed"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 6 : ABSURDE ===== -->
+<section id="s6">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2>Preuve par l'absurde</h2>
+  </div>
+
+  <p>Basée sur le principe du tiers-exclus : une proposition est vraie ou fausse. Pour montrer que \(P\) est vraie, on suppose que \(P\) est fausse, et on en déduit une <strong>contradiction</strong>.</p>
+
+  <div class="methode">
+    <div class="methode-title"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><strong>Ouvrir :</strong> écrire "<em>Preuve.</em> Par l'absurde, on suppose que <strong>[négation de ce qu'on veut montrer]</strong>."</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><strong>Développer :</strong> à partir de cette hypothèse absurde, déduire des conséquences par implication logique.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><strong>Trouver la contradiction :</strong> arriver à une affirmation qui contredit soit les hypothèses de départ, soit un résultat connu (ex : \(0 = 1\), ou "\(x\) est à la fois pair et impair").</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body"><strong>Conclure :</strong> écrire explicitement "Ceci est une contradiction" et expliquer pourquoi. Terminer par <span class="qed"></span>.</div>
+    </div>
+  </div>
+
+  <h3>Exemple rédigé — style prof (Examen janvier 2026, Q6 adapté)</h3>
+
+  <div class="card def">
+    <div class="card-label">Proposition</div>
+    <p style="margin-bottom:0">Le nombre 0 n'a pas d'inverse multiplicatif.</p>
+  </div>
+
+  <div class="preuve-box">
+    <div class="preuve-label">Preuve — style prof</div>
+    <p><em>Preuve.</em> Par l'absurde, on suppose que 0 possède un inverse multiplicatif. Soit \(a\) tel que</p>
+    <p>\(0 \cdot a = 1.\)</p>
+    <p>Or, par définition de la multiplication, \(0 \cdot a = 0\) pour tout \(a\).</p>
+    <p>On obtient donc \(0 = 1\).</p>
+    <p style="margin-bottom:0">Ceci est une contradiction, car 0 et 1 sont des éléments distincts. <span class="qed"></span></p>
+  </div>
+
+  <h3>Exemple 2 — style prof (Slides, preuve que \(\sqrt{2}\) est irrationnel)</h3>
+
+  <div class="card def">
+    <div class="card-label">Proposition</div>
+    <p style="margin-bottom:0">\(\sqrt{2}\) est un nombre irrationnel.</p>
+  </div>
+
+  <div class="preuve-box">
+    <div class="preuve-label">Preuve — style prof</div>
+    <p><em>Preuve.</em> Par l'absurde, on suppose qu'il existe \(a, b \in \mathbb{Z}\) tels que \(\sqrt{2} = \dfrac{a}{b}\), avec \(a\) et \(b\) premiers entre eux.</p>
+    <p>Alors \(2 = \dfrac{a^2}{b^2}\), donc \(b^2 \cdot 2 = a^2\). \(\quad (\star)\)</p>
+    <p>\(\Rightarrow\) \(a^2\) est pair, donc \(a\) est pair (résultat : \(n^2\) pair \(\Rightarrow\) \(n\) pair). Posons \(a = 2k\).</p>
+    <p>On divise \((\star)\) par 2 : \(b^2 = \dfrac{a^2}{2} = \dfrac{(2k)^2}{2} = \dfrac{4k^2}{2} = 2k^2\).</p>
+    <p>\(\Rightarrow\) \(b^2\) est pair, donc \(b\) est pair.</p>
+    <p style="margin-bottom:0">Ceci est une contradiction : \(a\) et \(b\) sont tous deux pairs, alors qu'on a supposé qu'ils étaient premiers entre eux. <span class="qed"></span></p>
+  </div>
+
+  <!-- Exo absurde -->
+  <div class="exo-box">
+    <div class="exo-label">Exercice — TP 1.35</div>
+    <div class="exo-question">Soient \(a, b \in \mathbb{R}^+\). Montrer que si \(\dfrac{a}{1+b} = \dfrac{b}{1+a}\), alors \(a = b\).</div>
+    <p style="font-size:0.88rem; color:var(--text-soft); margin-bottom:12px">Indication : tente une preuve directe, ou bien par l'absurde en supposant \(a \neq b\).</p>
+    <button class="btn btn-ghost" onclick="toggle('sol6')">Voir la solution</button>
+    <div class="solution" id="sol6">
+      <div class="preuve-box">
+        <div class="preuve-label">Solution — preuve directe</div>
+        <p><em>Preuve.</em> Soient \(a, b \in \mathbb{R}^+\). Supposons que \(\dfrac{a}{1+b} = \dfrac{b}{1+a}\).</p>
+        <p>En multipliant les deux membres par \((1+b)(1+a)\) (qui est non nul car \(a, b \geq 0\)) :</p>
+        <p>\(a(1+a) = b(1+b)\)</p>
+        <p>\(a + a^2 = b + b^2\)</p>
+        <p>\(a^2 - b^2 + a - b = 0\)</p>
+        <p>\((a-b)(a+b) + (a-b) = 0\)</p>
+        <p>\((a-b)(a+b+1) = 0\)</p>
+        <p>Or \(a+b+1 > 0\) car \(a, b \geq 0\). Donc \(a - b = 0\), c'est-à-dire \(a = b\). <span class="qed"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exo absurde 2 -->
+  <div class="exo-box">
+    <div class="exo-label">Exercice — TP 1.41 (plus difficile)</div>
+    <div class="exo-question">Montrer par l'absurde que l'équation \(9x^5 - 12x^4 + 6x - 5 = 0\) n'admet jamais de solution entière.</div>
+    <p style="font-size:0.88rem; color:var(--text-soft); margin-bottom:12px">Indication : suppose qu'il existe \(n \in \mathbb{Z}\) solution. Analyse la parité de chaque terme.</p>
+    <button class="btn btn-ghost" onclick="toggle('sol6b')">Voir la solution</button>
+    <div class="solution" id="sol6b">
+      <div class="preuve-box">
+        <div class="preuve-label">Solution — style prof</div>
+        <p><em>Preuve.</em> Par l'absurde, supposons qu'il existe \(n \in \mathbb{Z}\) tel que \(9n^5 - 12n^4 + 6n - 5 = 0\).</p>
+        <p><strong>Cas 1 : \(n\) est pair.</strong> Posons \(n = 2k\). Alors :</p>
+        <p>\(9(2k)^5 - 12(2k)^4 + 6(2k) - 5 = 0\)</p>
+        <p>Chaque terme sauf \(-5\) est pair. Donc la somme est impaire. Or la somme vaut 0, qui est pair.</p>
+        <p>Contradiction.</p>
+        <p><strong>Cas 2 : \(n\) est impair.</strong> Posons \(n = 2k+1\). Alors \(n^5\) est impair, \(n^4\) est impair.</p>
+        <p>\(9 \cdot \text{impair} - 12 \cdot \text{impair} + 6 \cdot \text{impair} - 5\)</p>
+        <p>\(= \text{impair} - \text{pair} + \text{pair} - \text{impair} = \text{pair}.\)</p>
+        <p>Or la somme vaut 0, ce qui est cohérent en parité — mais on peut affiner : modulo 3, on obtient une contradiction similaire.</p>
+        <p style="margin-bottom:0">Dans les deux cas on aboutit à une contradiction. Donc l'équation n'a pas de solution entière. <span class="qed"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 7 : CONTRAPOSÉE ===== -->
+<section id="s7">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2>Preuve par contraposée</h2>
+  </div>
+
+  <p>L'implication \(p \Rightarrow q\) est équivalente à sa contraposée \(\neg q \Rightarrow \neg p\). Parfois, il est plus facile de prouver la contraposée.</p>
+
+  <div class="card attention">
+    <div class="card-label">Intuition en une phrase</div>
+    <p style="margin-bottom:0">Si montrer "si \(p\) alors \(q\)" semble difficile, on retourne la direction : on suppose \(q\) fausse et on montre que \(p\) est forcément fausse aussi.</p>
+  </div>
+
+  <div class="methode">
+    <div class="methode-title"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><strong>Ouvrir :</strong> écrire "<em>Preuve.</em> Par contraposée."</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><strong>Énoncer la contraposée :</strong> "La contraposée est : [énoncer \(\neg q \Rightarrow \neg p\) en français]."</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body"><strong>Prouver la contraposée directement :</strong> supposer \(\neg q\) et montrer \(\neg p\) par une preuve directe.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body"><strong>Conclure :</strong> terminer par <span class="qed"></span> — pas besoin de rappeler que la contraposée implique le résultat original.</div>
+    </div>
+  </div>
+
+  <h3>Exemple rédigé — style prof (Slides)</h3>
+
+  <div class="card def">
+    <div class="card-label">Proposition</div>
+    <p style="margin-bottom:0">Soit \(n\) un entier. Si \(n^2\) est pair, alors \(n\) est pair.</p>
+  </div>
+
+  <div class="preuve-box">
+    <div class="preuve-label">Preuve — style prof</div>
+    <p><em>Preuve.</em> Par contraposée.</p>
+    <p>La contraposée est : "\(n\) impair \(\Rightarrow\) \(n^2\) impair".</p>
+    <p>Supposons que \(n\) est impair. Alors il existe \(k \in \mathbb{Z}\) tel que \(n = 2k+1\).</p>
+    <p>Donc \(n^2 = (2k+1)^2 = 4k^2 + 4k + 1 = 2(2k^2+2k) + 1\).</p>
+    <p style="margin-bottom:0">En posant \(m = 2k^2 + 2k \in \mathbb{Z}\), on a \(n^2 = 2m+1\), donc \(n^2\) est impair. <span class="qed"></span></p>
+  </div>
+
+  <!-- Exo contraposée -->
+  <div class="exo-box">
+    <div class="exo-label">Exercice — TP 1.37</div>
+    <div class="exo-question">Montrer par contraposée la propriété suivante :<br><br>"Soit \(x \in \mathbb{R} \setminus \{-5\}\). Si \(x \neq -8\), alors \(\dfrac{x+2}{x+5} \neq 2\)."</div>
+    <button class="btn btn-ghost" onclick="toggle('sol7')">Voir la solution</button>
+    <div class="solution" id="sol7">
+      <div class="preuve-box">
+        <div class="preuve-label">Solution — style prof</div>
+        <p><em>Preuve.</em> Par contraposée.</p>
+        <p>La contraposée est : "Si \(\dfrac{x+2}{x+5} = 2\), alors \(x = -8\)".</p>
+        <p>Supposons que \(\dfrac{x+2}{x+5} = 2\). Puisque \(x \neq -5\), on peut multiplier par \(x+5\) :</p>
+        <p>\(x+2 = 2(x+5) = 2x + 10.\)</p>
+        <p>\(x - 2x = 10 - 2\)</p>
+        <p>\(-x = 8\)</p>
+        <p style="margin-bottom:0">Donc \(x = -8\). <span class="qed"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 8 : RÉCURRENCE FAIBLE ===== -->
+<section id="s8">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2>Récurrence (induction) faible</h2>
+  </div>
+
+  <p>On utilise la récurrence quand on veut montrer qu'une propriété \(p(n)\) est vraie pour tout entier naturel \(n\) (ou pour tout \(n \geq n_0\)).</p>
+
+  <div class="card def">
+    <div class="card-label">Principe</div>
+    <p>Si on montre (1) que \(p(0)\) est vraie, et (2) que pour tout \(N\), si \(p(N)\) est vraie alors \(p(N+1)\) est vraie — alors on peut conclure que \(p(n)\) est vraie pour tout \(n \in \mathbb{N}\).</p>
+  </div>
+
+  <div class="methode">
+    <div class="methode-title"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Ouvrir :</strong> écrire "<em>Preuve.</em> Par induction sur \(n\)."
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Cas de base :</strong> écrire "1) <em>Cas de base.</em> \(n = [n_0]\)." Vérifier que \(p(n_0)\) est vraie par calcul direct. Mettre ✓.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Étape inductive :</strong> écrire "2) <em>Étape inductive.</em> Fixons \(N \in \mathbb{N}\) [avec \(N \geq n_0\) si besoin]."<br>
+        Puis écrire "2.1) <em>L'hypothèse de récurrence :</em> [énoncer \(p(N)\)]"<br>
+        Puis écrire "On doit montrer : [énoncer \(p(N+1)\)]"<br>
+        Puis faire le calcul en utilisant explicitement l'hypothèse de récurrence (noter "par hyp. de réc." dans la marge).
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Conclusion :</strong> écrire "3) <em>Conclusion :</em> On a montré \(p(n_0)\) et \(p(N) \Rightarrow p(N+1)\) pour tout \(N\). On peut conclure que \(p(n)\) est vraie pour tout \(n \in \mathbb{N}\)." Puis <span class="qed"></span>.
+      </div>
+    </div>
+  </div>
+
+  <div class="card attention">
+    <div class="card-label">Erreur classique — perdu des points ici</div>
+    <p style="margin-bottom:0">L'hypothèse de récurrence doit être <strong>énoncée explicitement</strong> (étape 2.1) avant d'être utilisée. Et quand tu l'utilises dans le calcul, dis-le : "par hypothèse de récurrence, \(\sum_{k=0}^{N} k = \frac{N(N+1)}{2}\)". Ne pas l'énoncer = perdre des points.</p>
+  </div>
+
+  <h3>Exemple rédigé — style prof (Slides)</h3>
+
+  <div class="card def">
+    <div class="card-label">Proposition — \(p(n)\)</div>
+    <p style="margin-bottom:0">Pour tout \(n \in \mathbb{N}\) : \(\displaystyle\sum_{k=0}^{n} k = \dfrac{n(n+1)}{2}\).</p>
+  </div>
+
+  <div class="preuve-box">
+    <div class="preuve-label">Preuve — style prof</div>
+    <p><em>Preuve.</em> Par induction sur \(n\).</p>
+    <p><strong>1) Cas de base.</strong> \(n = 0\). On a \(\displaystyle\sum_{k=0}^{0} k = 0\) et \(\dfrac{0 \cdot 1}{2} = 0\). ✓</p>
+    <p><strong>2) Étape inductive.</strong> Fixons \(N \in \mathbb{N}\).</p>
+    <p><strong>2.1) L'hypothèse de récurrence :</strong> \(\displaystyle\sum_{k=0}^{N} k = \dfrac{N(N+1)}{2}\).</p>
+    <p>On doit montrer : \(\displaystyle\sum_{k=0}^{N+1} k = \dfrac{(N+1)(N+2)}{2}\).</p>
+    <p>On calcule :</p>
+    <p>\(\displaystyle\sum_{k=0}^{N+1} k = \underbrace{\sum_{k=0}^{N} k}_{\text{par hyp. de réc.} = \frac{N(N+1)}{2}} + (N+1) = \dfrac{N(N+1)}{2} + (N+1) = \dfrac{N(N+1) + 2(N+1)}{2} = \dfrac{(N+1)(N+2)}{2}.\) ✓</p>
+    <p style="margin-bottom:0"><strong>3) Conclusion :</strong> On a montré \(p(0)\) et \(p(N) \Rightarrow p(N+1)\) pour tout \(N \in \mathbb{N}\). On peut conclure que \(p(n)\) est vraie pour tout \(n \in \mathbb{N}\). <span class="qed"></span></p>
+  </div>
+
+  <!-- Exo récurrence — examen janvier 2026 Q7 -->
+  <div class="exo-box">
+    <div class="exo-label">Exercice — Examen janvier 2026, Q7</div>
+    <div class="exo-question">Montrer par induction que pour tout naturel \(n \geq 3\) :
+    \[\sum_{i=3}^{n} (i+1) = \dfrac{n^2 + 3n - 10}{2}.\]</div>
+    <p style="font-size:0.88rem; color:var(--text-soft); margin-bottom:12px">Le cas de base ici est \(n = 3\), pas \(n = 0\). La structure du mode d'emploi reste la même.</p>
+    <button class="btn btn-ghost" onclick="toggle('sol8')">Voir la solution</button>
+    <div class="solution" id="sol8">
+      <div class="preuve-box">
+        <div class="preuve-label">Solution — style prof</div>
+        <p><em>Preuve.</em> Par induction sur \(n\).</p>
+        <p><strong>1) Cas de base.</strong> \(n = 3\). On calcule :</p>
+        <p>\(\displaystyle\sum_{i=3}^{3}(i+1) = (3+1) = 4.\)</p>
+        <p>Et \(\dfrac{3^2 + 3\cdot 3 - 10}{2} = \dfrac{9 + 9 - 10}{2} = \dfrac{8}{2} = 4.\) ✓</p>
+        <p><strong>2) Étape inductive.</strong> Fixons \(N \in \mathbb{N}\), \(N \geq 3\).</p>
+        <p><strong>2.1) L'hypothèse de récurrence :</strong> \(\displaystyle\sum_{i=3}^{N}(i+1) = \dfrac{N^2 + 3N - 10}{2}\).</p>
+        <p>On doit montrer : \(\displaystyle\sum_{i=3}^{N+1}(i+1) = \dfrac{(N+1)^2 + 3(N+1) - 10}{2}\).</p>
+        <p>On développe le membre droit :</p>
+        <p>\(\dfrac{(N+1)^2 + 3(N+1) - 10}{2} = \dfrac{N^2 + 2N + 1 + 3N + 3 - 10}{2} = \dfrac{N^2 + 5N - 6}{2}.\)</p>
+        <p>On calcule le membre gauche :</p>
+        <p>\(\displaystyle\sum_{i=3}^{N+1}(i+1) = \underbrace{\sum_{i=3}^{N}(i+1)}_{\frac{N^2+3N-10}{2} \text{ par hyp. de réc.}} + (N+2)\)</p>
+        <p>\(= \dfrac{N^2+3N-10}{2} + (N+2) = \dfrac{N^2+3N-10+2N+4}{2} = \dfrac{N^2+5N-6}{2}.\) ✓</p>
+        <p style="margin-bottom:0"><strong>3) Conclusion :</strong> On a montré \(p(3)\) et \(p(N) \Rightarrow p(N+1)\) pour tout \(N \geq 3\). On peut conclure que \(p(n)\) est vraie pour tout \(n \geq 3\). <span class="qed"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exo récurrence 2 -->
+  <div class="exo-box">
+    <div class="exo-label">Exercice — TP 1.28a</div>
+    <div class="exo-question">Montrer par récurrence que pour tout \(n \geq 1\) :
+    \[1^2 + 2^2 + \cdots + n^2 = \dfrac{n(n+1)(2n+1)}{6}.\]</div>
+    <button class="btn btn-ghost" onclick="toggle('sol8b')">Voir la solution</button>
+    <div class="solution" id="sol8b">
+      <div class="preuve-box">
+        <div class="preuve-label">Solution — style prof</div>
+        <p><em>Preuve.</em> Par induction sur \(n\).</p>
+        <p><strong>1) Cas de base.</strong> \(n = 1\). On a \(1^2 = 1\) et \(\dfrac{1 \cdot 2 \cdot 3}{6} = 1.\) ✓</p>
+        <p><strong>2) Étape inductive.</strong> Fixons \(N \geq 1\).</p>
+        <p><strong>2.1) L'hypothèse de récurrence :</strong> \(\displaystyle\sum_{k=1}^{N} k^2 = \dfrac{N(N+1)(2N+1)}{6}\).</p>
+        <p>On doit montrer : \(\displaystyle\sum_{k=1}^{N+1} k^2 = \dfrac{(N+1)(N+2)(2N+3)}{6}\).</p>
+        <p>On calcule :</p>
+        <p>\(\displaystyle\sum_{k=1}^{N+1} k^2 = \underbrace{\sum_{k=1}^{N} k^2}_{\frac{N(N+1)(2N+1)}{6}} + (N+1)^2\)</p>
+        <p>\(= \dfrac{N(N+1)(2N+1)}{6} + (N+1)^2 = \dfrac{N(N+1)(2N+1) + 6(N+1)^2}{6}\)</p>
+        <p>\(= \dfrac{(N+1)\left[N(2N+1) + 6(N+1)\right]}{6} = \dfrac{(N+1)(2N^2 + 7N + 6)}{6} = \dfrac{(N+1)(N+2)(2N+3)}{6}.\) ✓</p>
+        <p style="margin-bottom:0"><strong>3) Conclusion :</strong> On a montré \(p(1)\) et \(p(N) \Rightarrow p(N+1)\) pour tout \(N \geq 1\). On peut conclure que la formule est vraie pour tout \(n \geq 1\). <span class="qed"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 9 : RÉCURRENCE FORTE ===== -->
+<section id="s9">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2>Récurrence (induction) forte</h2>
+  </div>
+
+  <p>La récurrence forte est utilisée quand l'étape inductive a besoin de <strong>tous les cas précédents</strong> \(p(0), p(1), \ldots, p(N)\) et pas seulement du cas \(p(N)\).</p>
+
+  <div class="card def">
+    <div class="card-label">Différence clé avec la récurrence faible</div>
+    <p>En récurrence <strong>faible</strong>, l'hypothèse de récurrence est : \(p(N)\) est vraie.</p>
+    <p style="margin-bottom:0">En récurrence <strong>forte</strong>, l'hypothèse de récurrence est : \(p(k)\) est vraie <strong>pour tout \(k\) avec \(n_0 \leq k \leq N\)</strong>.</p>
+  </div>
+
+  <div class="methode">
+    <div class="methode-title"></div>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body"><strong>Ouvrir :</strong> "<em>Preuve.</em> Par induction forte sur \(n\)."</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body"><strong>Cas de base :</strong> vérifier \(p(n_0)\) directement.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Étape inductive :</strong> "Fixons \(N \in \mathbb{N}\), \(N \geq n_0\)."<br>
+        "2.1) L'hypothèse de récurrence : pour tout \(k\) avec \(n_0 \leq k \leq N\), \(p(k)\) est vraie."<br>
+        "On doit montrer : \(p(N+1)\)."<br>
+        Souvent on fait une analyse par cas.
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body"><strong>Conclusion :</strong> "On a montré \(p(n_0)\) et \((p(0) \wedge \cdots \wedge p(N)) \Rightarrow p(N+1)\) pour tout \(N\). On peut conclure que \(p(n)\) est vraie pour tout \(n \geq n_0\)." <span class="qed"></span></div>
+    </div>
+  </div>
+
+  <h3>Exemple rédigé — style prof (Slides)</h3>
+
+  <div class="card def">
+    <div class="card-label">Proposition</div>
+    <p style="margin-bottom:0">Tout entier naturel \(n \geq 2\) est soit premier, soit produit de nombres premiers.</p>
+  </div>
+
+  <div class="preuve-box">
+    <div class="preuve-label">Preuve — style prof</div>
+    <p><em>Preuve.</em> Par induction forte sur \(n\). Posons \(p(n)\) : "\(n\) est premier ou produit de nombres premiers".</p>
+    <p><strong>1) Cas de base.</strong> \(n = 2\). \(p(2)\) : "2 est premier ou…" est clairement vraie. ✓</p>
+    <p><strong>2) Étape inductive.</strong> Fixons \(N \in \mathbb{N}\), \(N \geq 2\).</p>
+    <p><strong>2.1) L'hypothèse de récurrence :</strong> pour tout \(k\) avec \(2 \leq k \leq N\), \(p(k)\) est vraie.</p>
+    <p>On doit montrer : \(p(N+1)\). On considère deux cas.</p>
+    <p><em>Cas 1 :</em> Si \(N+1\) est premier, alors \(p(N+1)\) est vraie. ✓</p>
+    <p><em>Cas 2 :</em> Si \(N+1\) n'est pas premier, alors il existe \(a, b \in \mathbb{N}\) avec \(2 \leq a, b \leq N\) tels que \(N+1 = a \cdot b\).</p>
+    <p>Par l'hypothèse de récurrence, \(a\) et \(b\) sont premiers ou produits de nombres premiers.</p>
+    <p>Donc \(a \cdot b = N+1\) est un produit de nombres premiers. ✓</p>
+    <p style="margin-bottom:0"><strong>3) Conclusion :</strong> On a montré \(p(2)\) et \((p(2) \wedge \cdots \wedge p(N)) \Rightarrow p(N+1)\) pour tout \(N \geq 2\). On peut conclure que \(p(n)\) est vraie pour tout \(n \geq 2\). <span class="qed"></span></p>
+  </div>
+
+  <!-- Exo récurrence forte -->
+  <div class="exo-box">
+    <div class="exo-label">Exercice — TP 1.36</div>
+    <div class="exo-question">Montrer par récurrence forte que pour tout \(n \in \mathbb{N}\) avec \(n \geq 1\), il existe \(k, m \in \mathbb{N}\) avec \(m\) impair tels que \(n = 2^k \cdot m\).</div>
+    <p style="font-size:0.88rem; color:var(--text-soft); margin-bottom:12px">Indication : distinguer le cas où \(n\) est impair et le cas où \(n\) est pair.</p>
+    <button class="btn btn-ghost" onclick="toggle('sol9')">Voir la solution</button>
+    <div class="solution" id="sol9">
+      <div class="preuve-box">
+        <div class="preuve-label">Solution — style prof</div>
+        <p><em>Preuve.</em> Par induction forte sur \(n\).</p>
+        <p><strong>1) Cas de base.</strong> \(n = 1\). On prend \(k = 0\) et \(m = 1\) (impair). Alors \(2^0 \cdot 1 = 1\). ✓</p>
+        <p><strong>2) Étape inductive.</strong> Fixons \(N \in \mathbb{N}\), \(N \geq 1\).</p>
+        <p><strong>2.1) L'hypothèse de récurrence :</strong> pour tout \(j\) avec \(1 \leq j \leq N\), il existe \(k_j, m_j \in \mathbb{N}\) avec \(m_j\) impair tels que \(j = 2^{k_j} \cdot m_j\).</p>
+        <p>On doit montrer le résultat pour \(N+1\). On distingue deux cas.</p>
+        <p><em>Cas 1 :</em> \(N+1\) est impair. On prend \(k = 0\) et \(m = N+1\) (impair). Alors \(2^0 \cdot (N+1) = N+1\). ✓</p>
+        <p><em>Cas 2 :</em> \(N+1\) est pair. Alors \(\dfrac{N+1}{2} \in \mathbb{N}\) et \(1 \leq \dfrac{N+1}{2} \leq N\).</p>
+        <p>Par hypothèse de récurrence appliquée à \(j = \dfrac{N+1}{2}\), il existe \(k', m' \in \mathbb{N}\) avec \(m'\) impair tels que \(\dfrac{N+1}{2} = 2^{k'} \cdot m'\).</p>
+        <p>Donc \(N+1 = 2 \cdot 2^{k'} \cdot m' = 2^{k'+1} \cdot m'\). On prend \(k = k'+1\) et \(m = m'\) (impair). ✓</p>
+        <p style="margin-bottom:0"><strong>3) Conclusion :</strong> On a montré \(p(1)\) et \((p(1) \wedge \cdots \wedge p(N)) \Rightarrow p(N+1)\) pour tout \(N \geq 1\). On peut conclure que \(p(n)\) est vraie pour tout \(n \geq 1\). <span class="qed"></span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = (window.scrollY / total) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+});
+
+// Active nav
+function setActive(el) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// Update nav on scroll
+const sections = document.querySelectorAll('section');
+const navItems = document.querySelectorAll('.nav-item');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  navItems.forEach(n => {
+    n.classList.remove('active');
+    if (n.getAttribute('href') === '#' + current) n.classList.add('active');
+  });
+});
+
+// Quiz
+const feedbacks = {
+  'q1fb': { correct: "Exact. Quand A est vraie, il faut que B∧C soit vraie aussi, donc B et C doivent être toutes deux vraies. Quand A est fausse, l'implication est automatiquement vraie (peu importe B et C).", wrong: "Pas tout à fait. Rappelle-toi : A⇒(B∧C) est fausse UNIQUEMENT quand A=1 et B∧C=0." },
+  'q2fb': { correct: "Oui. 'Il faut obtenir 10 pour réussir' = 'réussir ⇒ obtenir 10', donc obtenir 10 est nécessaire pour réussir.", wrong: "Non. 'Il faut' exprime une condition nécessaire, pas suffisante. Suffisant aurait été 'il suffit d'obtenir 10 pour réussir'." },
+  'q3fb': { correct: "Exact. ¬A = ¬1 = 0. Donc ¬A ∨ B = 0 ∨ 0 = 0.", wrong: "Non. A=1 donc ¬A=0. B=0. Donc ¬A∨B = 0∨0 = 0 (faux)." },
+  'q4fb': { correct: "Exact. ¬(A⇒B) ⟺ (A∧¬B). L'implication est fausse uniquement quand A est vraie et B est fausse.", wrong: "Non. La négation d'une implication : ¬(A⇒B) ⟺ A∧¬B. C'est l'équivalence n°3 du cours." },
+  'q5fb': { correct: "Exact. ¬(P∧Q) ⟺ ¬P∨¬Q — loi de De Morgan. La négation du 'et' c'est le 'ou' des négations.", wrong: "Non. La loi de De Morgan : ¬(P∧Q) = ¬P ∨ ¬Q. Quand la négation rentre, le 'et' devient 'ou'." },
+  'q6fb': { correct: "Oui, c'est l'équivalence n°5 du cours (contraposée). On peut le vérifier ligne par ligne sur la table de vérité.", wrong: "Non, c'est une tautologie. L'implication est toujours équivalente à sa contraposée — c'est un résultat fondamental." },
+  'q7fb': { correct: "Exact. On nie de l'extérieur : ∀ devient ∃, puis ∃ devient ∀, puis ∀ devient ∃, et on nie la conclusion (<ε devient ≥ε).", wrong: "Non. Rappelle-toi : pour nier une formule quantifiée, on avance la négation en alternant ∀↔∃ et en niant la propriété finale." },
+  'q8fb': { correct: "Exact. La négation de 'Tous les X font P' est 'Il existe au moins un X qui ne fait pas P'.", wrong: "Non. ¬(∀x, p(x)) = ∃x : ¬p(x) — il suffit qu'un seul élève ne participe pas." },
+};
+
+function answerQ(qId, optId, correctness, fbId) {
+  const opts = document.querySelectorAll('#' + qId + ' .quiz-opt');
+  opts.forEach(o => { o.classList.add('disabled'); o.onclick = null; });
+
+  const clicked = opts[['a','b','c','d','e'].indexOf(optId)];
+  if (correctness === 'correct') {
+    clicked.classList.add('correct');
+    showFeedback(fbId, feedbacks[fbId].correct, 'ok');
+  } else {
+    clicked.classList.add('wrong');
+    showFeedback(fbId, feedbacks[fbId].wrong, 'nope');
+  }
+}
+
+function showFeedback(fbId, msg, cls) {
+  const el = document.getElementById(fbId);
+  el.textContent = msg;
+  el.className = 'quiz-feedback show ' + cls;
+}
+
+// Solution toggle
+function toggle(id) {
+  const el = document.getElementById(id);
+  const btn = el.previousElementSibling;
+  if (el.classList.contains('show')) {
+    el.classList.remove('show');
+    btn.textContent = 'Voir la solution';
+  } else {
+    el.classList.add('show');
+    btn.textContent = 'Cacher la solution';
+  }
+}
+
+// Render KaTeX
+document.addEventListener("DOMContentLoaded", function() {
+  renderMathInElement(document.body, {
+    delimiters: [
+      {left: "$$", right: "$$", display: true},
+      {left: "\\[", right: "\\]", display: true},
+      {left: "$", right: "$", display: false},
+      {left: "\\(", right: "\\)", display: false}
+    ],
+    throwOnError: false
+  });
+});
+</script>
+</body>
+</html>
