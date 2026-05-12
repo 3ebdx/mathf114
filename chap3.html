@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATHF114 — Chapitre 3 : Limites</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false})"></script>
+<style>
+:root{
+  --bg:#EFF6FF;
+  --white:#ffffff;
+  --blue-dark:#1e3a5f;
+  --blue-mid:#2563EB;
+  --blue-light:#DBEAFE;
+  --blue-xlight:#EFF6FF;
+  --green-dark:#166534;
+  --green-light:#DCFCE7;
+  --amber-dark:#92400e;
+  --amber-light:#FEF3C7;
+  --red-dark:#991b1b;
+  --red-light:#FEE2E2;
+  --slate:#F1F5F9;
+  --text:#1e293b;
+  --muted:#64748b;
+  --sidebar-w:268px;
+  --border:#BFDBFE;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Georgia',serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;}
+
+/* ── PROGRESS BAR ── */
+#pbar{position:fixed;top:0;left:0;height:3px;background:var(--blue-mid);width:0%;z-index:2000;transition:width .08s;}
+
+/* ── SIDEBAR ── */
+#sidebar{
+  width:var(--sidebar-w);min-height:100vh;background:var(--white);
+  border-right:1px solid var(--border);position:fixed;top:0;left:0;
+  overflow-y:auto;padding:0 0 40px;z-index:100;
+}
+.sb-head{
+  padding:20px 18px 14px;border-bottom:1px solid var(--border);
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);font-family:'Georgia',serif;
+}
+.sb-title{font-size:1rem;color:var(--blue-dark);font-weight:normal;margin-bottom:2px;letter-spacing:0;}
+.sb-sub{font-size:.72rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+.sb-link{
+  display:flex;align-items:baseline;gap:8px;padding:8px 18px;
+  font-size:.83rem;color:#475569;text-decoration:none;
+  border-left:3px solid transparent;transition:all .14s;line-height:1.35;
+}
+.sb-link:hover,.sb-link.active{
+  background:var(--blue-light);color:var(--blue-mid);
+  border-left-color:var(--blue-mid);
+}
+.sb-num{font-size:.7rem;font-weight:bold;color:var(--blue-mid);flex-shrink:0;}
+
+/* ── MAIN ── */
+#main{margin-left:var(--sidebar-w);padding:44px 52px 100px;max-width:900px;width:100%;}
+.pg-title{font-size:2rem;color:var(--blue-dark);font-weight:normal;margin-bottom:4px;}
+.pg-sub{color:var(--muted);font-size:.9rem;margin-bottom:52px;font-style:italic;}
+
+/* ── SECTION ── */
+.sec{margin-bottom:72px;scroll-margin-top:30px;}
+.sec-header{display:flex;align-items:baseline;gap:12px;margin-bottom:22px;padding-bottom:10px;border-bottom:2px solid var(--blue-light);}
+.sec-num{font-size:1.5rem;font-weight:bold;color:var(--blue-mid);}
+.sec-title{font-size:1.3rem;color:var(--blue-dark);font-weight:normal;}
+
+/* ── BOXES ── */
+.box{border-radius:7px;padding:18px 22px;margin-bottom:18px;line-height:1.75;}
+.box-label{font-size:.68rem;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+
+.def{background:var(--blue-light);border-left:4px solid var(--blue-mid);}
+.def .box-label{color:var(--blue-mid);}
+
+.prop{background:var(--green-light);border-left:4px solid #16a34a;}
+.prop .box-label{color:var(--green-dark);}
+
+.proof-box{background:var(--amber-light);border-left:4px solid #d97706;}
+.proof-box .box-label{color:var(--amber-dark);}
+
+.ex-box{background:var(--slate);border-left:4px solid #94a3b8;}
+.ex-box .box-label{color:#475569;}
+
+.warn{background:#FFF7ED;border-left:4px solid #EA580C;}
+.warn .box-label{color:#C2410C;}
+
+/* ── INTUITION ── */
+.intuition{
+  font-size:1.02rem;color:#334155;font-style:italic;
+  border-left:3px solid var(--blue-mid);padding:10px 16px;
+  margin-bottom:20px;background:rgba(219,234,254,.25);border-radius:0 5px 5px 0;
+}
+
+/* ── MATH ── */
+.mblock{overflow-x:auto;padding:10px 0;text-align:center;}
+p{margin-bottom:10px;line-height:1.75;}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:12px;margin-top:4px;}
+.step{display:grid;grid-template-columns:26px 1fr;gap:10px;align-items:start;}
+.step-n{
+  background:var(--blue-mid);color:#fff;border-radius:50%;
+  width:23px;height:23px;display:flex;align-items:center;justify-content:center;
+  font-size:.68rem;font-weight:bold;flex-shrink:0;margin-top:3px;font-family:sans-serif;
+}
+.step-c{line-height:1.7;}
+
+/* ── ASCII ── */
+.ascii{
+  background:#1e293b;color:#94a3b8;padding:14px 20px;
+  border-radius:7px;font-family:'Courier New',monospace;
+  font-size:.8rem;line-height:1.65;margin:14px 0;overflow-x:auto;
+  white-space:pre;
+}
+.ascii .hi{color:#60a5fa;}
+
+/* ── EXERCISE ── */
+.exo{
+  border:2px solid #CBD5E1;border-radius:8px;padding:20px 22px;
+  margin-top:24px;background:var(--white);
+}
+.exo-label{font-size:.68rem;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;}
+.exo h4{font-weight:normal;margin-bottom:12px;line-height:1.7;}
+.btn-sol{
+  background:var(--blue-dark);color:#fff;border:none;
+  padding:8px 20px;border-radius:5px;cursor:pointer;
+  font-size:.84rem;margin-top:8px;font-family:inherit;transition:background .15s;
+}
+.btn-sol:hover{background:var(--blue-mid);}
+.sol-content{
+  display:none;margin-top:18px;padding-top:16px;
+  border-top:1px solid #E2E8F0;line-height:1.75;
+}
+.sol-content.vis{display:block;}
+
+/* ── QUIZ ── */
+.quiz{border:2px solid #CBD5E1;border-radius:8px;padding:20px 22px;margin-top:24px;background:var(--white);}
+.quiz-label{font-size:.68rem;font-weight:bold;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:10px;}
+.quiz-q{font-size:.95rem;margin-bottom:14px;line-height:1.65;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.qbtn{
+  display:block;width:100%;padding:10px 14px;border:1.5px solid #CBD5E1;
+  border-radius:6px;cursor:pointer;font-size:.88rem;transition:all .14s;
+  background:var(--white);font-family:inherit;text-align:left;line-height:1.5;
+}
+.qbtn:not([disabled]):hover{border-color:var(--blue-mid);background:var(--blue-light);}
+.qbtn.ok{border-color:#16a34a!important;background:#DCFCE7!important;color:var(--green-dark)!important;}
+.qbtn.ko{border-color:#dc2626!important;background:#FEE2E2!important;color:var(--red-dark)!important;}
+.quiz-fb{
+  margin-top:14px;padding:12px 16px;border-radius:6px;
+  font-size:.88rem;display:none;line-height:1.65;
+}
+.quiz-fb.ok{background:#DCFCE7;color:var(--green-dark);border-left:3px solid #16a34a;display:block;}
+.quiz-fb.ko{background:#FEE2E2;color:var(--red-dark);border-left:3px solid #dc2626;display:block;}
+
+@media(max-width:780px){
+  #sidebar{display:none;}
+  #main{margin-left:0;padding:22px 18px 60px;}
+}
+</style>
+</head>
+<body>
+
+<div id="pbar"></div>
+
+<nav id="sidebar">
+  <div class="sb-head">
+    <div class="sb-title">MATHF114 · Limites</div>
+    <div class="sb-sub">Chapitre 3 — ULB</div>
+  </div>
+  <a class="sb-link active" href="#s1"><span class="sb-num">1.</span>Définition ε-δ</a>
+  <a class="sb-link" href="#s2"><span class="sb-num">2.</span>Unicité de la limite</a>
+  <a class="sb-link" href="#s3"><span class="sb-num">3.</span>Limites à gauche / droite</a>
+  <a class="sb-link" href="#s4"><span class="sb-num">4.</span>Limites à l'infini</a>
+  <a class="sb-link" href="#s5"><span class="sb-num">5.</span>Théorèmes</a>
+  <a class="sb-link" href="#s6"><span class="sb-num">6.</span>Méthode — preuves ε-δ</a>
+  <a class="sb-link" href="#s7"><span class="sb-num">7.</span>Preuves d'inexistence</a>
+  <a class="sb-link" href="#s8"><span class="sb-num">8.</span>Continuité</a>
+</nav>
+
+<main id="main">
+
+<h1 class="pg-title">Chapitre 3 — Limites et continuité</h1>
+<p class="pg-sub">MATHF114 · ULB · Préparation à l'examen — priorité aux types de preuves</p>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S1 — DÉFINITION ε-δ                            -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s1">
+<div class="sec-header">
+  <span class="sec-num">1.</span>
+  <span class="sec-title">Définition formelle — limite ε-δ</span>
+</div>
+
+<p class="intuition">En une phrase : $L$ est la limite de $f$ en $a$ si on peut rendre $f(x)$ aussi proche de $L$ que l'on veut, en prenant $x$ suffisamment proche de $a$ (mais $x \neq a$).</p>
+
+<div class="box def">
+  <div class="box-label">Définition — Limite de $f$ en $a$ (slides, définition centrale)</div>
+  <p>Soit $f : A \to B$ où $A, B \subseteq \mathbb{R}$ et soit $a$ un point adhérent à $A$. Un nombre réel $L$ est la <strong>limite de $f$ en $a$</strong> si</p>
+  <div class="mblock">$$(\forall \varepsilon > 0)\,(\exists \delta > 0)\,(\forall x \in A)\,\bigl((x \neq a\ \text{et}\ |x - a| < \delta) \Rightarrow (|f(x) - L| < \varepsilon)\bigr).$$</div>
+  <p>On note alors $\displaystyle\lim_{x \to a} f(x) = L$.</p>
+</div>
+
+<div class="box warn">
+  <div class="box-label">Lecture de la définition — ne jamais sauter cette étape</div>
+  <div class="steps">
+    <div class="step"><div class="step-n">A</div><div class="step-c"><strong>«&nbsp;$\forall \varepsilon > 0$&nbsp;»</strong> : on nous <em>donne</em> une tolérance $\varepsilon$ autour de $L$. On ne la choisit pas.</div></div>
+    <div class="step"><div class="step-n">B</div><div class="step-c"><strong>«&nbsp;$\exists \delta > 0$&nbsp;»</strong> : on doit <em>trouver</em> un rayon $\delta$ autour de $a$. Ce $\delta$ <strong>dépend de $\varepsilon$</strong>. Plus $\varepsilon$ est petit, plus $\delta$ devra être petit.</div></div>
+    <div class="step"><div class="step-n">C</div><div class="step-c"><strong>«&nbsp;$\forall x \in A$, $x \neq a$, $|x-a| < \delta$&nbsp;»</strong> : pour tout $x$ du domaine, différent de $a$, et à distance strictement inférieure à $\delta$ de $a$. La condition $x \neq a$ est essentielle : la valeur $f(a)$ n'intervient pas dans la définition de la limite.</div></div>
+    <div class="step"><div class="step-n">D</div><div class="step-c"><strong>«&nbsp;$|f(x) - L| < \varepsilon$&nbsp;»</strong> : $f(x)$ se trouve dans la bande de tolérance $\varepsilon$ autour de $L$.</div></div>
+  </div>
+</div>
+
+<div class="ascii"><span class="hi">Schéma — ordre des quantificateurs (ce qui dépend de quoi)</span>
+
+  On reçoit :  ε > 0  (tolérance autour de L, arbitrairement petite)
+                  ↓
+  On répond :  δ > 0  (rayon autour de a, qu'on adapte à ε)
+                  ↓
+  Garantie  :  tout x ≠ a avec |x − a| &lt; δ  vérifie  |f(x) − L| &lt; ε
+
+  Sur l'axe des y :    L − ε ·····  L  ····· L + ε     (bande de tolérance)
+  Sur l'axe des x :  a − δ   (a)   a + δ               (x ≠ a dans ce rayon)
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple résolu — $\displaystyle\lim_{x \to 2}(3x+1) = 7$ (Exercice 3.6a, correctif annoté)</div>
+  <p><strong>Brouillon (trouver $\delta$) :</strong> on calcule</p>
+  <div class="mblock">$$|(3x+1) - 7| = |3x - 6| = 3|x - 2|.$$</div>
+  <p>On veut $3|x-2| < \varepsilon$, c'est-à-dire $|x-2| < \varepsilon/3$. On pose $\delta = \varepsilon/3$.</p>
+  <p><strong>Rédaction (à reproduire à l'examen) :</strong></p>
+  <p>Soit $\varepsilon > 0$. Définissons $\delta_\varepsilon = \dfrac{\varepsilon}{3} > 0$.</p>
+  <p>Alors si $x \neq 2$ et $|x - 2| < \delta_\varepsilon$, nous avons</p>
+  <div class="mblock">$$|f(x) - 7| = |(3x+1) - 7| = |3x - 6| = 3|x-2| < 3\delta_\varepsilon = 3 \cdot \frac{\varepsilon}{3} = \varepsilon.$$</div>
+  <p>Nous avons donc bien que $\forall \varepsilon > 0$, $\exists \delta > 0$ tel que $\forall x \in \mathbb{R}$, $x \neq 2$ et $|x-2| < \delta \Rightarrow |(3x+1)-7| < \varepsilon$, et donc que $\displaystyle\lim_{x \to 2}(3x+1) = 7$. $\square$</p>
+</div>
+
+<div class="quiz" id="q1">
+  <div class="quiz-label">Quiz 1.1</div>
+  <div class="quiz-q">Pour montrer $\displaystyle\lim_{x \to 0} x^2 = 0$, on calcule $|x^2 - 0| = x^2 = |x|^2$. Quel choix de $\delta$ est correct ?</div>
+  <div class="quiz-opts">
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q1',this)">$\delta = \varepsilon^2$</button>
+    <button class="qbtn" data-ok="true"  onclick="doQuiz('q1',this)">$\delta = \sqrt{\varepsilon}$</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q1',this)">$\delta = \varepsilon / 2$</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q1',this)">$\delta = \varepsilon$</button>
+  </div>
+  <div class="quiz-fb" id="q1-fb"></div>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 1.1 — à faire soi-même</div>
+  <h4>Montrer, en utilisant la définition ε-δ, que $\displaystyle\lim_{x \to 0} x^2 = 0$ (Exercice 3.6b).</h4>
+  <p>Indication : calculer $|x^2 - 0|$, puis en déduire $\delta$ en fonction de $\varepsilon$.</p>
+  <button class="btn-sol" onclick="toggleSol('sol1')">Voir la solution</button>
+  <div class="sol-content" id="sol1">
+    <p><strong>Brouillon :</strong> $|x^2 - 0| = x^2 = |x|^2$. On veut $|x|^2 < \varepsilon$, c'est-à-dire $|x| < \sqrt{\varepsilon}$. On pose $\delta = \sqrt{\varepsilon}$.</p>
+    <p><strong>Rédaction :</strong></p>
+    <p>Soit $\varepsilon > 0$. Définissons $\delta = \sqrt{\varepsilon} > 0$.</p>
+    <p>Alors si $x \neq 0$ et $|x - 0| < \delta$, nous avons</p>
+    <div class="mblock">$$|x^2 - 0| = x^2 = |x|^2 < \delta^2 = (\sqrt{\varepsilon})^2 = \varepsilon.$$</div>
+    <p>Nous avons donc bien que $\displaystyle\lim_{x \to 0} x^2 = 0$. $\square$</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S2 — UNICITÉ                                   -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s2">
+<div class="sec-header">
+  <span class="sec-num">2.</span>
+  <span class="sec-title">Unicité de la limite</span>
+</div>
+
+<p class="intuition">En une phrase : la notation $\lim_{x\to a} f(x) = L$ n'a de sens que si la limite est unique — ce qui est bien le cas.</p>
+
+<div class="box prop">
+  <div class="box-label">Proposition — Unicité de la limite (slides, proposition)</div>
+  <p>Si $L_1$ et $L_2$ sont deux nombres réels vérifiant la définition de « limite de $f$ en $a$ », alors $L_1 = L_2$.</p>
+</div>
+
+<div class="box proof-box">
+  <div class="box-label">Démonstration — par l'absurde (style examen janvier 2026, Question 6)</div>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-c"><strong>Hypothèse absurde :</strong> Supposons par l'absurde que $L_1 \neq L_2$. On suppose que $L_1 > L_2$ (le cas $L_2 > L_1$ est semblable en échangeant les rôles de $L_1$ et $L_2$).</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-c"><strong>Choix stratégique de $\varepsilon$ :</strong> Soit
+      $$\varepsilon = \frac{L_1 - L_2}{2} > 0.$$
+      Ce choix place la bande de tolérance autour de $L_1$ et celle autour de $L_2$ exactement dos à dos, sans chevauchement.</div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-c"><strong>Application de la définition à $L_1$ :</strong> Puisque $L_1$ est une limite de $f$ en $a$, il existe $\delta_1 > 0$ tel que
+      $$\forall x \in A,\ x \neq a,\ |x-a| < \delta_1 \Rightarrow |f(x) - L_1| < \varepsilon. \tag{1}$$</div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-c"><strong>Application de la définition à $L_2$ :</strong> Puisque $L_2$ est une limite de $f$ en $a$, il existe $\delta_2 > 0$ tel que
+      $$\forall x \in A,\ x \neq a,\ |x-a| < \delta_2 \Rightarrow |f(x) - L_2| < \varepsilon. \tag{2}$$</div></div>
+    <div class="step"><div class="step-n">5</div><div class="step-c"><strong>Choix d'un $x$ commun :</strong> Soit $x \in A$, $x \neq a$, avec $|x - a| < \min\{\delta_1, \delta_2\}$. Un tel $x$ existe car $a$ est un point adhérent à $A$. Ce $x$ satisfait simultanément les conditions de (1) et de (2).</div></div>
+    <div class="step"><div class="step-n">6</div><div class="step-c"><strong>Déduction de (1) — borne inférieure sur $f(x)$ :</strong> Par (1), $|f(x) - L_1| < \varepsilon$, donc en particulier $f(x) - L_1 > -\varepsilon$, d'où
+      $$f(x) > L_1 - \varepsilon = L_1 - \frac{L_1 - L_2}{2} = \frac{L_1 + L_2}{2}.$$</div></div>
+    <div class="step"><div class="step-n">7</div><div class="step-c"><strong>Déduction de (2) — borne supérieure sur $f(x)$ :</strong> Par (2), $|f(x) - L_2| < \varepsilon$, donc en particulier $f(x) - L_2 < \varepsilon$, d'où
+      $$f(x) < L_2 + \varepsilon = L_2 + \frac{L_1 - L_2}{2} = \frac{L_1 + L_2}{2}.$$</div></div>
+    <div class="step"><div class="step-n">8</div><div class="step-c"><strong>Contradiction :</strong> On obtient simultanément $f(x) > \dfrac{L_1+L_2}{2}$ et $f(x) < \dfrac{L_1+L_2}{2}$. Une valeur réelle $f(x)$ ne peut pas être à la fois strictement supérieure et strictement inférieure à $\dfrac{L_1+L_2}{2}$. Contradiction.</div></div>
+    <div class="step"><div class="step-n">9</div><div class="step-c"><strong>Conclusion :</strong> L'hypothèse $L_1 \neq L_2$ est fausse. Donc $L_1 = L_2$. $\square$</div></div>
+  </div>
+</div>
+
+<div class="quiz" id="q2">
+  <div class="quiz-label">Quiz 2.1</div>
+  <div class="quiz-q">Dans la preuve d'unicité, pourquoi pose-t-on $\varepsilon = (L_1 - L_2)/2$ plutôt qu'une autre valeur ?</div>
+  <div class="quiz-opts">
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q2',this)">Parce que c'est la seule valeur que la définition autorise.</button>
+    <button class="qbtn" data-ok="true"  onclick="doQuiz('q2',this)">Pour que les bandes de tolérance autour de $L_1$ et $L_2$ ne se chevauchent pas, ce qui force la contradiction.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q2',this)">Parce que $\varepsilon$ doit toujours valoir la moitié de la différence des deux limites supposées.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q2',this)">Pour obtenir $\delta_1 = \delta_2$ dans la définition.</button>
+  </div>
+  <div class="quiz-fb" id="q2-fb"></div>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 2.1 — compléter la preuve</div>
+  <h4>Dans la preuve d'unicité, à l'étape 6, on part de $|f(x) - L_1| < \varepsilon$ et on obtient $f(x) > (L_1+L_2)/2$. Reproduire ce calcul intégralement, en détaillant chaque inégalité.</h4>
+  <button class="btn-sol" onclick="toggleSol('sol2')">Voir la solution</button>
+  <div class="sol-content" id="sol2">
+    <p>Par définition de la valeur absolue, $|f(x) - L_1| < \varepsilon$ signifie $-\varepsilon < f(x) - L_1 < \varepsilon$.</p>
+    <p>On extrait la borne inférieure : $f(x) - L_1 > -\varepsilon$, d'où $f(x) > L_1 - \varepsilon$.</p>
+    <p>On substitue $\varepsilon = (L_1 - L_2)/2$ :</p>
+    <div class="mblock">$$f(x) > L_1 - \frac{L_1 - L_2}{2} = \frac{2L_1 - (L_1 - L_2)}{2} = \frac{L_1 + L_2}{2}.$$</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S3 — LIMITES LATÉRALES                         -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s3">
+<div class="sec-header">
+  <span class="sec-num">3.</span>
+  <span class="sec-title">Limites à gauche et à droite</span>
+</div>
+
+<p class="intuition">En une phrase : au lieu de prendre $x$ proche de $a$ des deux côtés, on n'approche que d'un côté — soit par valeurs inférieures (gauche), soit par valeurs supérieures (droite).</p>
+
+<div class="box def">
+  <div class="box-label">Définition — Limites latérales (slides)</div>
+  <p>Soit $f : A \to B$ où $A, B \subseteq \mathbb{R}$ et $a$ un point adhérent à $A$.</p>
+  <p><strong>Limite à gauche :</strong> $L \in \mathbb{R}$ est la <strong>limite à gauche</strong> de $f$ en $a$ si</p>
+  <div class="mblock">$$(\forall \varepsilon > 0)(\exists \delta > 0)(\forall x \in A)\bigl((x < a\ \text{et}\ |x-a| < \delta) \Rightarrow |f(x) - L| < \varepsilon\bigr).$$</div>
+  <p>On note $\displaystyle\lim_{x \to a^-} f(x) = L$.</p>
+  <p style="margin-top:10px;"><strong>Limite à droite :</strong> $L \in \mathbb{R}$ est la <strong>limite à droite</strong> de $f$ en $a$ si</p>
+  <div class="mblock">$$(\forall \varepsilon > 0)(\exists \delta > 0)(\forall x \in A)\bigl((x > a\ \text{et}\ |x-a| < \delta) \Rightarrow |f(x) - L| < \varepsilon\bigr).$$</div>
+  <p>On note $\displaystyle\lim_{x \to a^+} f(x) = L$.</p>
+</div>
+
+<div class="box prop">
+  <div class="box-label">Proposition — Lien entre limite et limites latérales (slides)</div>
+  <p>La limite $\displaystyle\lim_{x \to a} f(x)$ existe si et seulement si les limites à gauche et à droite existent <strong>et sont égales</strong> :</p>
+  <div class="mblock">$$\lim_{x \to a} f(x) = L \iff \lim_{x \to a^-} f(x) = L \quad \text{et} \quad \lim_{x \to a^+} f(x) = L.$$</div>
+</div>
+
+<div class="box warn">
+  <div class="box-label">Conséquence directe — preuve d'inexistence par limites latérales</div>
+  <p>Si $\displaystyle\lim_{x \to a^-} f(x) \neq \lim_{x \to a^+} f(x)$ (ou si l'une des deux n'existe pas), alors $\displaystyle\lim_{x \to a} f(x)$ <strong>n'existe pas</strong>. C'est la méthode la plus rapide à l'examen.</p>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple résolu — $f(x) = 2x + \dfrac{|x|}{x}$ en $a = 0$ (Exercice 3.9a, correctif)</div>
+  <p>La valeur absolue crée deux comportements distincts. On traite chaque côté séparément.</p>
+  <p><strong>Limite à droite ($x \to 0^+$, c'est-à-dire $x > 0$) :</strong> Pour $x > 0$, $|x| = x$, donc $|x|/x = 1$.</p>
+  <div class="mblock">$$\lim_{x \to 0^+}\!\left(2x + \frac{|x|}{x}\right) = \lim_{x \to 0^+}(2x + 1) = 2 \cdot 0 + 1 = 1.$$</div>
+  <p><strong>Limite à gauche ($x \to 0^-$, c'est-à-dire $x < 0$) :</strong> Pour $x < 0$, $|x| = -x$, donc $|x|/x = -x/x = -1$.</p>
+  <div class="mblock">$$\lim_{x \to 0^-}\!\left(2x + \frac{|x|}{x}\right) = \lim_{x \to 0^-}(2x - 1) = 2 \cdot 0 - 1 = -1.$$</div>
+  <p><strong>Conclusion :</strong> $\displaystyle\lim_{x \to 0^+} f(x) = 1 \neq -1 = \lim_{x \to 0^-} f(x)$. Par la proposition ci-dessus, $\displaystyle\lim_{x \to 0} f(x)$ <strong>n'existe pas</strong>.</p>
+</div>
+
+<div class="quiz" id="q3">
+  <div class="quiz-label">Quiz 3.1</div>
+  <div class="quiz-q">Soit $f(x) = e^{1/x}$ pour $x \neq 0$. Que vaut $\displaystyle\lim_{x \to 0^+} f(x)$ ?</div>
+  <div class="quiz-opts">
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q3',this)">$0$</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q3',this)">$1$</button>
+    <button class="qbtn" data-ok="true"  onclick="doQuiz('q3',this)">$+\infty$</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q3',this)">La limite n'existe pas.</button>
+  </div>
+  <div class="quiz-fb" id="q3-fb"></div>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 3.1 — à faire soi-même</div>
+  <h4>Calculer les limites à gauche et à droite en $0$ de $f(x) = e^{1/x}$ (Exercice 3.9b). La limite $\displaystyle\lim_{x\to 0} e^{1/x}$ existe-t-elle ? Justifier.</h4>
+  <button class="btn-sol" onclick="toggleSol('sol3')">Voir la solution</button>
+  <div class="sol-content" id="sol3">
+    <p><strong>Limite à droite ($x \to 0^+$, donc $x > 0$ et $1/x \to +\infty$) :</strong></p>
+    <div class="mblock">$$\lim_{x \to 0^+} e^{1/x} = e^{+\infty} = +\infty.$$</div>
+    <p><strong>Limite à gauche ($x \to 0^-$, donc $x < 0$ et $1/x \to -\infty$) :</strong></p>
+    <div class="mblock">$$\lim_{x \to 0^-} e^{1/x} = e^{-\infty} = 0.$$</div>
+    <p><strong>Conclusion :</strong> La limite à droite vaut $+\infty$ et la limite à gauche vaut $0$. Elles ne sont pas égales (l'une est même infinie), donc par la proposition sur les limites latérales, $\displaystyle\lim_{x \to 0} e^{1/x}$ <strong>n'existe pas</strong>.</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S4 — LIMITES À L'INFINI                        -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s4">
+<div class="sec-header">
+  <span class="sec-num">4.</span>
+  <span class="sec-title">Limites à l'infini et limites infinies</span>
+</div>
+
+<p class="intuition">En une phrase : on étend la définition aux cas où $x$ tend vers $\pm\infty$ (limite à l'infini) ou où $f(x)$ tend vers $\pm\infty$ (limite infinie).</p>
+
+<div class="box def">
+  <div class="box-label">Définition — Limite en $+\infty$ (slides)</div>
+  <p>Si $A$ n'est pas majoré et $f : A \to B$, on dit que $f(x)$ <strong>tend vers $L$</strong> quand $x \to +\infty$ et on note $\displaystyle\lim_{x \to +\infty} f(x) = L$ si</p>
+  <div class="mblock">$$(\forall \varepsilon > 0)(\exists N > 0)(\forall x \in A)\bigl(x > N \Rightarrow |f(x) - L| < \varepsilon\bigr).$$</div>
+  <p>Le rôle de $\delta$ est joué par $N$ : au lieu d'une distance, c'est un seuil au-delà duquel $f$ reste proche de $L$.</p>
+</div>
+
+<div class="box def">
+  <div class="box-label">Définition — Limite infinie en un point ($f(x) \to +\infty$ quand $x \to a$) (slides)</div>
+  <div class="mblock">$$(\forall M > 0)(\exists \delta > 0)(\forall x \in A)\bigl(x \neq a\ \text{et}\ |x-a| < \delta \Rightarrow f(x) > M\bigr).$$</div>
+</div>
+
+<div class="box warn">
+  <div class="box-label">Règles opératoires sur les infinis (slides) — formes directes et formes indéterminées</div>
+  <p><strong>Formes qui donnent un résultat direct :</strong></p>
+  <div class="mblock">$$+\infty + \infty = +\infty \qquad (-\infty)+(-\infty)=-\infty \qquad \infty \cdot \infty = +\infty$$</div>
+  <div class="mblock">$$c \cdot (+\infty) = \begin{cases}+\infty & \text{si } c > 0 \\ -\infty & \text{si } c < 0\end{cases} \qquad \frac{L}{0^+} = \begin{cases}+\infty & \text{si } L>0 \\ -\infty & \text{si } L<0\end{cases}$$</div>
+  <p><strong>Formes indéterminées (à traiter au cas par cas) :</strong> $\infty - \infty$, $\ 0 \cdot \infty$, $\ \dfrac{\infty}{\infty}$, $\ \dfrac{0}{0}$.</p>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple 1 — terme dominant (Exercice 3.12d, correctif annoté)</div>
+  <p>Calculer $\displaystyle\lim_{x \to \pm\infty} \dfrac{x-4}{x^2 - 6x + 8}$.</p>
+  <p><strong>Méthode : mettre en évidence la plus haute puissance de $x$ au numérateur et au dénominateur.</strong></p>
+  <div class="mblock">$$\frac{x-4}{x^2-6x+8} = \frac{x\!\left(1-\dfrac{4}{x}\right)}{x^2\!\left(1-\dfrac{6}{x}+\dfrac{8}{x^2}\right)} = \frac{1}{x} \cdot \frac{1-\dfrac{4}{x}}{1-\dfrac{6}{x}+\dfrac{8}{x^2}}.$$</div>
+  <p>Quand $x \to \pm\infty$, tous les termes en $1/x$ tendent vers $0$, donc</p>
+  <div class="mblock">$$\lim_{x \to \pm\infty} \frac{x-4}{x^2-6x+8} = \lim_{x\to\pm\infty} \frac{1}{x} \cdot \frac{1}{1} = 0.$$</div>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple 2 — binôme conjugué (Exercice 3.12j, correctif annoté)</div>
+  <p>Calculer $\displaystyle\lim_{x \to \pm\infty}\!\left(\sqrt{2x^2-3x-5} - \sqrt{2x^2+3x-5}\right)$.</p>
+  <p><strong>Méthode : multiplier et diviser par la quantité conjuguée pour lever la forme $\infty - \infty$.</strong></p>
+  <div class="mblock">$$(\sqrt{A}-\sqrt{B}) \cdot \frac{\sqrt{A}+\sqrt{B}}{\sqrt{A}+\sqrt{B}} = \frac{A-B}{\sqrt{A}+\sqrt{B}}.$$</div>
+  <p>Ici, $A - B = (2x^2-3x-5)-(2x^2+3x-5) = -6x$, donc</p>
+  <div class="mblock">$$\sqrt{2x^2-3x-5} - \sqrt{2x^2+3x-5} = \frac{-6x}{\sqrt{2x^2-3x-5}+\sqrt{2x^2+3x-5}}.$$</div>
+  <p>On met en évidence $|x|$ dans les racines : $\sqrt{2x^2+\cdots} = |x|\sqrt{2+\cdots/x^2}$.</p>
+  <p><strong>Pour $x \to +\infty$</strong> ($|x|=x$, dénominateur $\approx 2x\sqrt{2}$) :</p>
+  <div class="mblock">$$\lim_{x\to+\infty}\frac{-6x}{2x\sqrt{2}} = \frac{-6}{2\sqrt{2}} = \frac{-3\sqrt{2}}{2}.$$</div>
+  <p><strong>Pour $x \to -\infty$</strong> ($|x|=-x$, dénominateur $\approx -2x\sqrt{2}$) :</p>
+  <div class="mblock">$$\lim_{x\to-\infty}\frac{-6x}{-2x\sqrt{2}} = \frac{-6}{-2\sqrt{2}} = \frac{3\sqrt{2}}{2}.$$</div>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 4.1 — à faire soi-même</div>
+  <h4>Calculer $\displaystyle\lim_{x \to +\infty} \dfrac{x^3 - 27}{x^2 - 9}$ (Exercice 3.12c).</h4>
+  <p>Indication : mettre en évidence le terme dominant au numérateur ($x^3$) et au dénominateur ($x^2$).</p>
+  <button class="btn-sol" onclick="toggleSol('sol4')">Voir la solution</button>
+  <div class="sol-content" id="sol4">
+    <div class="mblock">$$\frac{x^3-27}{x^2-9} = \frac{x^3\!\left(1-\dfrac{27}{x^3}\right)}{x^2\!\left(1-\dfrac{9}{x^2}\right)} = x \cdot \frac{1-\dfrac{27}{x^3}}{1-\dfrac{9}{x^2}}.$$</div>
+    <p>Quand $x \to +\infty$, le facteur $x \to +\infty$ et le rapport $\to 1/1 = 1$. Donc</p>
+    <div class="mblock">$$\lim_{x \to +\infty}\frac{x^3-27}{x^2-9} = +\infty.$$</div>
+    <p>Pour $x \to -\infty$ : $x \to -\infty$ et le rapport $\to 1$, donc la limite vaut $-\infty$.</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S5 — THÉORÈMES                                 -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s5">
+<div class="sec-header">
+  <span class="sec-num">5.</span>
+  <span class="sec-title">Théorèmes — arithmétique et sandwich</span>
+</div>
+
+<p class="intuition">En une phrase : ces théorèmes permettent de calculer des limites complexes à partir de limites simples connues, sans repasser par la définition ε-δ.</p>
+
+<div class="box prop">
+  <div class="box-label">Proposition — Arithmétique des limites (slides)</div>
+  <p>Si $\displaystyle\lim_{x \to a} f(x) = L$ et $\displaystyle\lim_{x \to a} g(x) = K$ existent dans $\mathbb{R}$, alors :</p>
+  <ol style="margin-left:22px;margin-top:10px;line-height:2.2;">
+    <li>$\displaystyle\lim_{x \to a}[f(x)+g(x)] = L + K$</li>
+    <li>$\displaystyle\lim_{x \to a}[c\cdot f(x)] = c\cdot L$ pour tout $c \in \mathbb{R}$</li>
+    <li>$\displaystyle\lim_{x \to a}[f(x)-g(x)] = L - K$</li>
+    <li>$\displaystyle\lim_{x \to a}[f(x)\cdot g(x)] = L \cdot K$</li>
+    <li>$\displaystyle\lim_{x \to a}\dfrac{f(x)}{g(x)} = \dfrac{L}{K}$ si $K \neq 0$</li>
+  </ol>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple — $\lim_{x\to 1}(3x^2+1)$ par arithmétique (Exercice 3.8a, correctif)</div>
+  <p>On sait que $\lim_{x\to 1} x = 1$.</p>
+  <p>Par la règle 4 (produit) : $\lim_{x\to 1} x^2 = \lim x \cdot \lim x = 1 \cdot 1 = 1$.</p>
+  <p>Par la règle 2 (constante) : $\lim_{x\to 1} 3x^2 = 3 \cdot 1 = 3$.</p>
+  <p>Par la règle 1 (somme) : $\lim_{x\to 1}(3x^2+1) = 3 + 1 = 4$.</p>
+</div>
+
+<div class="box prop">
+  <div class="box-label">Proposition — Théorème du sandwich (gendarmes) (slides)</div>
+  <p>Soient $f, g, h : A \to \mathbb{R}$ telles que $\forall x \in A$, $f(x) \leq g(x) \leq h(x)$, et telles que les limites de $f$ et de $h$ en $a$ existent et sont <strong>identiques</strong>. Alors</p>
+  <div class="mblock">$$\lim_{x \to a} g(x) = \lim_{x \to a} f(x) = \lim_{x \to a} h(x).$$</div>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple 1 — $\lim_{x\to 0} x^2\sin(1/x)$ par le sandwich (slides)</div>
+  <p>La limite de $\sin(1/x)$ en $0$ n'existe pas, donc l'arithmétique ne s'applique pas directement.</p>
+  <p><strong>Encadrement :</strong> pour tout $x \neq 0$, $-1 \leq \sin(1/x) \leq 1$. En multipliant par $x^2 \geq 0$ :</p>
+  <div class="mblock">$$-x^2 \leq x^2\sin\!\left(\tfrac{1}{x}\right) \leq x^2.$$</div>
+  <p>Or $\lim_{x\to 0}(-x^2) = 0$ et $\lim_{x\to 0} x^2 = 0$. Par le théorème du sandwich :</p>
+  <div class="mblock">$$\lim_{x \to 0} x^2\sin\!\left(\frac{1}{x}\right) = 0.$$</div>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple 2 — $\lim_{x\to 0} \dfrac{x\sin x}{1-\cos x}$ (Exercice 3.13c, correctif)</div>
+  <p><strong>Astuce :</strong> multiplier et diviser par $(1+\cos x)$ pour lever la forme $0/0$.</p>
+  <div class="mblock">$$\frac{x\sin x}{1-\cos x} \cdot \frac{1+\cos x}{1+\cos x} = \frac{x\sin x(1+\cos x)}{1-\cos^2\!x} = \frac{x\sin x(1+\cos x)}{\sin^2\!x} = \frac{x}{\sin x}\cdot(1+\cos x).$$</div>
+  <p>Sachant que $\displaystyle\lim_{x\to 0}\dfrac{\sin x}{x} = 1$, on a $\displaystyle\lim_{x\to 0}\dfrac{x}{\sin x} = 1$. Et $\displaystyle\lim_{x\to 0}(1+\cos x) = 2$. Par la règle du produit :</p>
+  <div class="mblock">$$\lim_{x\to 0}\frac{x\sin x}{1-\cos x} = 1 \cdot 2 = 2.$$</div>
+</div>
+
+<div class="quiz" id="q5">
+  <div class="quiz-label">Quiz 5.1</div>
+  <div class="quiz-q">Pour appliquer le théorème du sandwich à $g$ encadrée par $f \leq g \leq h$, quelle condition est indispensable ?</div>
+  <div class="quiz-opts">
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q5',this)">$f$ et $h$ doivent être continues en $a$.</button>
+    <button class="qbtn" data-ok="true"  onclick="doQuiz('q5',this)">Les limites de $f$ et $h$ en $a$ doivent exister et être égales.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q5',this)">La limite de $g$ doit être connue à l'avance.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q5',this)">L'encadrement $f \leq g \leq h$ doit être valable sur tout $\mathbb{R}$.</button>
+  </div>
+  <div class="quiz-fb" id="q5-fb"></div>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 5.1 — à faire soi-même</div>
+  <h4>En utilisant $\displaystyle\lim_{x\to 0}\dfrac{\sin x}{x} = 1$, calculer $\displaystyle\lim_{x\to 0}\dfrac{\sin 7x}{3x}$ (Exercice 3.13b).</h4>
+  <p>Indication : faire apparaître la forme $\sin(\cdot)/(\cdot)$ en multipliant et divisant par $7$, puis poser $u = 7x$.</p>
+  <button class="btn-sol" onclick="toggleSol('sol5')">Voir la solution</button>
+  <div class="sol-content" id="sol5">
+    <div class="mblock">$$\frac{\sin 7x}{3x} = \frac{7}{3} \cdot \frac{\sin 7x}{7x}.$$</div>
+    <p>En posant $u = 7x$, quand $x \to 0$ on a $u \to 0$, donc $\displaystyle\lim_{x\to 0}\dfrac{\sin 7x}{7x} = \lim_{u\to 0}\dfrac{\sin u}{u} = 1$.</p>
+    <p>Par la règle du produit par constante :</p>
+    <div class="mblock">$$\lim_{x\to 0}\frac{\sin 7x}{3x} = \frac{7}{3} \cdot 1 = \frac{7}{3}.$$</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S6 — MÉTHODE PREUVES ε-δ                       -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s6">
+<div class="sec-header">
+  <span class="sec-num">6.</span>
+  <span class="sec-title">Méthode complète — preuves ε-δ</span>
+</div>
+
+<p class="intuition">En une phrase : toute preuve ε-δ suit le même gabarit. Le travail réel se fait au brouillon. La rédaction est ensuite presque mécanique.</p>
+
+<div class="box warn">
+  <div class="box-label">Gabarit en 6 étapes — à suivre à la lettre</div>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-c"><strong>[Brouillon] Calculer $|f(x)-L|$ :</strong> simplifier jusqu'à faire apparaître $|x-a|$ au premier membre. Par exemple : $|(3x+1)-7| = 3|x-2|$.</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-c"><strong>[Brouillon] Trouver $\delta$ :</strong> à partir de $|f(x)-L| = C \cdot |x-a|^p$, pour avoir $|f(x)-L| < \varepsilon$ il suffit d'avoir $C \cdot |x-a|^p < \varepsilon$, soit $|x-a| < (\varepsilon/C)^{1/p}$. On pose $\delta = (\varepsilon/C)^{1/p}$.</div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-c"><strong>[Rédaction] Commencer par :</strong> «&nbsp;Soit $\varepsilon > 0$.&nbsp;»</div></div>
+    <div class="step"><div class="step-n">4</div><div class="step-c"><strong>[Rédaction] Annoncer $\delta$ :</strong> «&nbsp;Définissons $\delta = \ldots > 0$.&nbsp;» (donner la valeur trouvée au brouillon).</div></div>
+    <div class="step"><div class="step-n">5</div><div class="step-c"><strong>[Rédaction] Vérification :</strong> «&nbsp;Alors si $x \neq a$ et $|x-a| < \delta$, nous avons $|f(x)-L| = \ldots < \ldots = \varepsilon$.&nbsp;» (dérouler le calcul étape par étape).</div></div>
+    <div class="step"><div class="step-n">6</div><div class="step-c"><strong>[Rédaction] Conclusion :</strong> «&nbsp;Nous avons donc bien que $\forall \varepsilon > 0$, $\exists \delta > 0$ tel que $\ldots$, et donc que $\lim_{x\to a} f(x) = L$. $\square$&nbsp;»</div></div>
+  </div>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple complet — $\lim_{x\to 0^+} \dfrac{1}{x} = +\infty$ (Exercice 3.6c)</div>
+  <p>Ici on prouve une limite infinie. La définition devient : $\forall M>0$, $\exists \delta>0$ tel que $0 < x < \delta \Rightarrow 1/x > M$.</p>
+  <p><strong>Brouillon :</strong> $1/x > M \iff x < 1/M$. On pose donc $\delta = 1/M$.</p>
+  <p><strong>Rédaction :</strong></p>
+  <p>Soit $M > 0$. Définissons $\delta = \dfrac{1}{M} > 0$.</p>
+  <p>Alors si $x \neq 0$ et $0 < x < \delta$, on a $x < \dfrac{1}{M}$, donc</p>
+  <div class="mblock">$$\frac{1}{x} > M.$$</div>
+  <p>Nous avons donc bien que $\displaystyle\lim_{x \to 0^+}\dfrac{1}{x} = +\infty$. $\square$</p>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple — preuve de l'arithmétique des limites (Exercice 3.7, correctif annoté)</div>
+  <p>Montrons que si $\lim_{x\to a} f(x)=L$ et $c \in \mathbb{R}$ avec $c \neq 0$, alors $\lim_{x\to a} cf(x) = cL$.</p>
+  <p><strong>Brouillon :</strong> $|cf(x)-cL| = |c|\cdot|f(x)-L|$. On veut $|c|\cdot|f(x)-L| < \varepsilon'$, soit $|f(x)-L| < \varepsilon'/|c|$. On pose $\varepsilon = \varepsilon'/|c|$.</p>
+  <p><strong>Rédaction :</strong></p>
+  <p>Soit $\varepsilon' > 0$. Dans la définition de $\lim_{x\to a} f(x)=L$, appliquons-la avec $\varepsilon = \varepsilon'/|c| > 0$. Il existe alors $\delta > 0$ tel que</p>
+  <div class="mblock">$$\forall x \in A,\ x \neq a,\ |x-a|<\delta \Rightarrow |f(x)-L| < \frac{\varepsilon'}{|c|}.\ \tag{*}$$</div>
+  <p>Pour ce même $\delta$, si $x \neq a$ et $|x-a| < \delta$, alors par (*) :</p>
+  <div class="mblock">$$|cf(x)-cL| = |c|\cdot|f(x)-L| < |c| \cdot \frac{\varepsilon'}{|c|} = \varepsilon'.$$</div>
+  <p>Donc $\displaystyle\lim_{x \to a} cf(x) = cL$. $\square$</p>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 6.1 — à faire soi-même</div>
+  <h4>Montrer, en utilisant la définition ε-δ, que $\displaystyle\lim_{x \to 1}(2x + 3) = 5$.</h4>
+  <p>Indication : calculer $|(2x+3)-5|$ et en déduire $\delta$.</p>
+  <button class="btn-sol" onclick="toggleSol('sol6')">Voir la solution</button>
+  <div class="sol-content" id="sol6">
+    <p><strong>Brouillon :</strong></p>
+    <div class="mblock">$$|(2x+3)-5| = |2x-2| = 2|x-1|.$$</div>
+    <p>On veut $2|x-1| < \varepsilon$, c'est-à-dire $|x-1| < \varepsilon/2$. On pose $\delta = \varepsilon/2$.</p>
+    <p><strong>Rédaction :</strong></p>
+    <p>Soit $\varepsilon > 0$. Définissons $\delta = \dfrac{\varepsilon}{2} > 0$.</p>
+    <p>Alors si $x \neq 1$ et $|x-1| < \delta$, nous avons</p>
+    <div class="mblock">$$|(2x+3)-5| = |2x-2| = 2|x-1| < 2\delta = 2\cdot\frac{\varepsilon}{2} = \varepsilon.$$</div>
+    <p>Nous avons donc bien que $\displaystyle\lim_{x\to 1}(2x+3) = 5$. $\square$</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S7 — PREUVES D'INEXISTENCE                     -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s7">
+<div class="sec-header">
+  <span class="sec-num">7.</span>
+  <span class="sec-title">Preuves d'inexistence de limite</span>
+</div>
+
+<p class="intuition">En une phrase : une limite n'existe pas si $f(x)$ ne converge pas vers une valeur unique quand $x \to a$, quelle que soit la direction d'approche.</p>
+
+<div class="box def">
+  <div class="box-label">Définition — La limite n'existe pas (slides, négation)</div>
+  <p>La limite de $f$ en $a$ <strong>n'existe pas</strong> si pour tout $L \in \mathbb{R}$, la limite ne vaut pas $L$, c'est-à-dire :</p>
+  <div class="mblock">$$(\forall L \in \mathbb{R})(\exists \varepsilon > 0)(\forall \delta > 0)(\exists x \in A)\bigl(x \neq a\ \text{et}\ |x-a|<\delta\ \text{et}\ |f(x)-L|\geq\varepsilon\bigr).$$</div>
+</div>
+
+<div class="box prop">
+  <div class="box-label">Méthode 1 — Limites latérales différentes (méthode privilégiée à l'examen)</div>
+  <p>Si $\displaystyle\lim_{x \to a^-} f(x) \neq \displaystyle\lim_{x \to a^+} f(x)$ (ou si l'une des deux n'existe pas), alors $\displaystyle\lim_{x \to a} f(x)$ <strong>n'existe pas</strong>.</p>
+  <p>C'est la méthode la plus directe. Elle découle immédiatement de la proposition de la section 3.</p>
+</div>
+
+<div class="box prop">
+  <div class="box-label">Méthode 2 — Deux suites donnant des valeurs limites différentes</div>
+  <p>Si on trouve deux suites $(x_n)$ et $(y_n)$ dans $A\setminus\{a\}$ telles que $x_n \to a$ et $y_n \to a$, mais $\displaystyle\lim_{n\to\infty} f(x_n) \neq \lim_{n\to\infty} f(y_n)$, alors $\displaystyle\lim_{x\to a} f(x)$ <strong>n'existe pas</strong>.</p>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple 1 — $\sin(1/x)$ en $0$ (slides)</div>
+  <p>Montrons que $\displaystyle\lim_{x \to 0} \sin(1/x)$ n'existe pas. On trouve deux suites tendant vers $0$ mais avec des images différentes.</p>
+  <div class="mblock">$$x_n = \frac{1}{2\pi n} \to 0 \quad \text{et} \quad f(x_n) = \sin(2\pi n) = 0.$$</div>
+  <div class="mblock">$$y_n = \frac{1}{\pi/2 + 2\pi n} \to 0 \quad \text{et} \quad f(y_n) = \sin\!\left(\frac{\pi}{2}+2\pi n\right) = 1.$$</div>
+  <p>Les deux suites ont des limites $0 \neq 1$. Donc $\displaystyle\lim_{x\to 0}\sin(1/x)$ <strong>n'existe pas</strong>.</p>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple 2 — $\dfrac{|x|e^{|x|}}{x}$ en $0$ (Exercice 3.9c, correctif)</div>
+  <p><strong>Limite à droite ($x \to 0^+$, donc $x > 0$, $|x|=x$) :</strong></p>
+  <div class="mblock">$$\lim_{x\to 0^+}\frac{x\cdot e^x}{x} = \lim_{x\to 0^+} e^x = 1.$$</div>
+  <p><strong>Limite à gauche ($x \to 0^-$, donc $x < 0$, $|x|=-x$) :</strong></p>
+  <div class="mblock">$$\lim_{x\to 0^-}\frac{(-x)\cdot e^{-x}}{x} = \lim_{x\to 0^-}(-e^{-x}) = -1.$$</div>
+  <p><strong>Conclusion :</strong> $1 \neq -1$, donc par la proposition sur les limites latérales, $\displaystyle\lim_{x\to 0}\dfrac{|x|e^{|x|}}{x}$ <strong>n'existe pas</strong>. $\square$</p>
+</div>
+
+<div class="quiz" id="q7">
+  <div class="quiz-label">Quiz 7.1</div>
+  <div class="quiz-q">Quelle est la stratégie la plus directe pour montrer que $\displaystyle\lim_{x\to 0}\dfrac{|x|}{x}$ n'existe pas ?</div>
+  <div class="quiz-opts">
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q7',this)">Utiliser directement la définition formelle de non-existence.</button>
+    <button class="qbtn" data-ok="true"  onclick="doQuiz('q7',this)">Calculer la limite à gauche ($-1$) et à droite ($+1$) et constater qu'elles diffèrent.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q7',this)">Appliquer le théorème du sandwich avec $f=-1$ et $h=1$.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q7',this)">Montrer que $|x|/x$ n'est pas définie en $0$, donc la limite n'existe pas.</button>
+  </div>
+  <div class="quiz-fb" id="q7-fb"></div>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 7.1 — à faire soi-même</div>
+  <h4>Calculer les limites à gauche et à droite en $\pi/2$ de $\dfrac{1}{2 + 2\tan x}$ (Exercice 3.11), et conclure sur l'existence de la limite.</h4>
+  <p>Indication : rappel — $\tan x \to +\infty$ quand $x \to (\pi/2)^-$ et $\tan x \to -\infty$ quand $x \to (\pi/2)^+$.</p>
+  <button class="btn-sol" onclick="toggleSol('sol7')">Voir la solution</button>
+  <div class="sol-content" id="sol7">
+    <p><strong>Limite à droite ($x \to (\pi/2)^+$, $\tan x \to -\infty$) :</strong></p>
+    <div class="mblock">$$\lim_{x\to(\pi/2)^+}\frac{1}{2+2\tan x} = \frac{1}{2+2(-\infty)} = \frac{1}{-\infty} = 0^-.$$</div>
+    <p>Donc la limite à droite vaut $0$.</p>
+    <p><strong>Limite à gauche ($x \to (\pi/2)^-$, $\tan x \to +\infty$) :</strong></p>
+    <div class="mblock">$$\lim_{x\to(\pi/2)^-}\frac{1}{2+2\tan x} = \frac{1}{2+2(+\infty)} = \frac{1}{+\infty} = 0^+.$$</div>
+    <p>Donc la limite à gauche vaut $0$ aussi.</p>
+    <p><strong>Conclusion :</strong> Les deux limites latérales existent et valent toutes les deux $0$. Donc $\displaystyle\lim_{x\to\pi/2}\dfrac{1}{2+2\tan x} = 0$.</p>
+    <p><em>(Attention : bien que $\tan x$ soit infini en $\pi/2$, la fraction entière tend vers $0$ des deux côtés. La limite existe.)</em></p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- S8 — CONTINUITÉ                                -->
+<!-- ═══════════════════════════════════════════════ -->
+<section class="sec" id="s8">
+<div class="sec-header">
+  <span class="sec-num">8.</span>
+  <span class="sec-title">Continuité</span>
+</div>
+
+<p class="intuition">En une phrase : $f$ est continue en $a$ si la limite de $f$ en $a$ existe, vaut $f(a)$, et que $a$ est bien dans le domaine. Le graphe est « sans saut » en $a$.</p>
+
+<div class="box def">
+  <div class="box-label">Définition — Continuité en un point (slides)</div>
+  <p>Soit $f : A \to B$ une fonction réelle et $a \in A$. La fonction $f$ est <strong>continue au point $a$</strong> si</p>
+  <div class="mblock">$$\lim_{x \to a} f(x) = f(a).$$</div>
+  <p>Sinon, on dit que $f$ est <strong>discontinue</strong> au point $a$.</p>
+</div>
+
+<div class="box def">
+  <div class="box-label">Définition — Continuité sur un domaine (slides)</div>
+  <p>Une fonction $f$ est dite <strong>continue</strong> si elle est continue en chaque point $a$ de son domaine.</p>
+</div>
+
+<div class="box warn">
+  <div class="box-label">3 conditions à vérifier simultanément pour la continuité en $a$</div>
+  <div class="steps">
+    <div class="step"><div class="step-n">1</div><div class="step-c">$a \in \mathrm{dom}(f)$ : $f$ est définie en $a$.</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-c">$\displaystyle\lim_{x\to a} f(x)$ existe : les limites latérales existent et sont égales.</div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-c">$\displaystyle\lim_{x\to a} f(x) = f(a)$ : la limite coïncide avec la valeur de $f$ en $a$.</div></div>
+  </div>
+</div>
+
+<div class="box ex-box">
+  <div class="box-label">Exemple — Étude de la continuité (Exercice 3.15, correctif)</div>
+  <p>Soit $f(x) = \begin{cases} 1/x & \text{si } x < 0 \\ x^2 & \text{si } 0 \leq x \leq 2 \\ x+4 & \text{si } x > 2 \end{cases}$</p>
+  <p><strong>En $x = 0$ :</strong></p>
+  <p>— $\displaystyle\lim_{x\to 0^-} f(x) = \lim_{x\to 0^-}\!\frac{1}{x} = -\infty$ (infinie, n'existe pas dans $\mathbb{R}$).</p>
+  <p>— $\displaystyle\lim_{x\to 0^+} f(x) = \lim_{x\to 0^+} x^2 = 0 = f(0)$.</p>
+  <p>La limite à gauche n'existe pas dans $\mathbb{R}$, donc $\displaystyle\lim_{x\to 0} f(x)$ n'existe pas. $f$ est <strong>discontinue en $0$</strong>.</p>
+  <p><strong>En $x = 2$ :</strong></p>
+  <p>— $\displaystyle\lim_{x\to 2^-} f(x) = \lim_{x\to 2^-} x^2 = 4 = f(2)$.</p>
+  <p>— $\displaystyle\lim_{x\to 2^+} f(x) = \lim_{x\to 2^+}(x+4) = 6$.</p>
+  <p>Les limites latérales $4 \neq 6$, donc $\displaystyle\lim_{x\to 2} f(x)$ n'existe pas. $f$ est <strong>discontinue en $2$</strong>.</p>
+  <p><strong>Conclusion :</strong> $f$ est continue sur $\mathbb{R} \setminus \{0, 2\}$.</p>
+</div>
+
+<div class="quiz" id="q8">
+  <div class="quiz-label">Quiz 8.1</div>
+  <div class="quiz-q">Soit $f : \mathbb{R} \to \mathbb{R}$ définie par $f(x) = x^2$ pour $x \neq 1$ et $f(1) = 5$. Est-ce que $f$ est continue en $x = 1$ ?</div>
+  <div class="quiz-opts">
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q8',this)">Oui, car $f$ est définie en $1$.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q8',this)">Oui, car $\lim_{x\to 1} f(x) = 1$.</button>
+    <button class="qbtn" data-ok="true"  onclick="doQuiz('q8',this)">Non, car $\lim_{x\to 1} f(x) = 1 \neq 5 = f(1)$.</button>
+    <button class="qbtn" data-ok="false" onclick="doQuiz('q8',this)">Non, car $f$ n'est pas dérivable en $1$.</button>
+  </div>
+  <div class="quiz-fb" id="q8-fb"></div>
+</div>
+
+<div class="exo">
+  <div class="exo-label">Exercice 8.1 — à faire soi-même</div>
+  <h4>Soit $f(x) = \begin{cases} \sqrt{1-x} & \text{si } x < 1 \\ 3 & \text{si } x = 1 \\ \frac{1}{2}x + 1 & \text{si } 1 < x \leq 2 \end{cases}$ Déterminer en quels points $f$ est continue (Exercice 3.16).</h4>
+  <button class="btn-sol" onclick="toggleSol('sol8')">Voir la solution</button>
+  <div class="sol-content" id="sol8">
+    <p><strong>En $x = 1$ :</strong></p>
+    <p>— $\displaystyle\lim_{x\to 1^-}\sqrt{1-x} = \sqrt{0} = 0$.</p>
+    <p>— $\displaystyle\lim_{x\to 1^+}\!\left(\frac{1}{2}x+1\right) = \frac{1}{2}+1 = \frac{3}{2}$.</p>
+    <p>$0 \neq 3/2$, donc la limite n'existe pas. $f$ est <strong>discontinue en $1$</strong>. (De plus, $f(1) = 3$ ne coïncide avec aucune des deux limites latérales.)</p>
+    <p><strong>En $x = 2$ (point extrême du domaine) :</strong></p>
+    <p>— $\displaystyle\lim_{x\to 2^-}\!\left(\frac{1}{2}x+1\right) = 2 = f(2)$. ($f$ n'est pas définie à droite de $2$.)</p>
+    <p>$f$ est continue à gauche en $2$, et donc continue en $2$ (par rapport au domaine).</p>
+    <p><strong>Conclusion :</strong> $f$ est continue sur $\mathrm{dom}(f) \setminus \{1\} = ]-\infty, 1[\, \cup\, ]1, 2]$.</p>
+  </div>
+</div>
+</section>
+
+</main>
+
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const p=(window.scrollY/(h.scrollHeight-h.clientHeight))*100;
+  document.getElementById('pbar').style.width=Math.min(p,100)+'%';
+});
+
+// ── ACTIVE SIDEBAR ──
+const secs=document.querySelectorAll('.sec');
+const links=document.querySelectorAll('.sb-link');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      links.forEach(l=>l.classList.remove('active'));
+      const t=document.querySelector(`.sb-link[href="#${e.target.id}"]`);
+      if(t)t.classList.add('active');
+    }
+  });
+},{rootMargin:'-20% 0px -70% 0px'});
+secs.forEach(s=>obs.observe(s));
+
+// ── TOGGLE SOLUTION ──
+function toggleSol(id){
+  const el=document.getElementById(id);
+  const btn=el.previousElementSibling;
+  const vis=el.classList.toggle('vis');
+  btn.textContent=vis?'Masquer la solution':'Voir la solution';
+  if(vis&&window.renderMathInElement)
+    renderMathInElement(el,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+}
+
+// ── QUIZ ──
+const FB={
+  ok:{
+    q1:'Correct. On a $|x^2 - 0| = |x|^2 < \\delta^2 = (\\sqrt{\\varepsilon})^2 = \\varepsilon$.',
+    q2:'Correct. Avec $\\varepsilon=(L_1-L_2)/2$, les intervalles $]L_1-\\varepsilon,L_1+\\varepsilon[$ et $]L_2-\\varepsilon,L_2+\\varepsilon[$ sont disjoints — leur frontière commune est $(L_1+L_2)/2$.',
+    q3:'Correct. Pour $x>0$, $1/x>0$ et $1/x\\to+\\infty$ quand $x\\to0^+$, donc $e^{1/x}\\to e^{+\\infty}=+\\infty$.',
+    q5:'Correct. Le théorème exige que $\\lim f = \\lim h$. Sans cette égalité, $g$ peut converger vers n\'importe quoi.',
+    q7:'Correct. Pour $x>0$ : $|x|/x=1$. Pour $x<0$ : $|x|/x=-1$. Limites différentes, donc pas de limite.',
+    q8:'Correct. $\\lim_{x\\to1}f(x)=1\\neq5=f(1)$. La condition $\\lim_{x\\to a}f(x)=f(a)$ n\'est pas satisfaite.'
+  },
+  ko:{
+    q1:'Non. On calcule $|x^2-0|=|x|^2$. Pour $|x|^2<\\varepsilon$, il faut $|x|<\\sqrt{\\varepsilon}$, donc $\\delta=\\sqrt{\\varepsilon}$.',
+    q2:'Non. Ce choix est stratégique : il garantit que les deux bandes de tolérance se touchent sans se chevaucher, forçant la contradiction $f(x)>(L_1+L_2)/2$ et $f(x)<(L_1+L_2)/2$.',
+    q3:'Non. Pour $x>0$, $1/x\\to+\\infty$, donc $e^{1/x}\\to+\\infty$, pas une valeur finie.',
+    q5:'Non. La continuité n\'est pas requise. Ce qui compte, c\'est que les limites de $f$ et $h$ existent et soient égales.',
+    q7:'Non. Le fait que $|x|/x$ soit indéfinie en $0$ ne suffit pas — la limite peut malgré tout exister. Il faut comparer les limites latérales.',
+    q8:'Non. $f$ est bien définie en $1$ ($f(1)=5$), mais la limite $\\lim_{x\\to1}f(x)=\\lim_{x\\to1}x^2=1\\neq5=f(1)$.'
+  }
+};
+
+function doQuiz(id,btn){
+  const quiz=document.getElementById(id);
+  if(quiz.dataset.done)return;
+  quiz.dataset.done='1';
+  const isOk=btn.dataset.ok==='true';
+  quiz.querySelectorAll('.qbtn').forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.ok==='true')b.classList.add('ok');
+  });
+  if(!isOk)btn.classList.add('ko');
+  const fb=document.getElementById(id+'-fb');
+  fb.className='quiz-fb '+(isOk?'ok':'ko');
+  fb.innerHTML=(isOk?'[Correct] ':'[Incorrect] ')+(isOk?FB.ok[id]:FB.ko[id]);
+  if(window.renderMathInElement)
+    renderMathInElement(fb,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+}
+</script>
+</body>
+</html>
