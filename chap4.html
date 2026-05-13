@@ -1326,31 +1326,63 @@
       <p style="font-size:14px;color:var(--text-muted);">Quand $a = 0$, on parle de <strong>développement de MacLaurin</strong>.</p>
     </div>
 
-    <h3>MacLaurin des fonctions classiques (à mémoriser)</h3>
+    <h3>Construire un polynôme de Taylor : pratique</h3>
 
-    <div class="card">
-      <div class="col-2">
-        <div>
-          <h4>$e^x$ (MacLaurin)</h4>
-          <div class="formula-box">$$e^x = \sum_{k=0}^{n}\frac{x^k}{k!} + o(x^n)$$</div>
-          <p style="font-size:13px;color:var(--text-muted);">$= 1 + x + \frac{x^2}{2} + \frac{x^3}{6} + \cdots$</p>
+    <!-- Worked exercise: MacLaurin of e^x order 3 -->
+    <div class="card example-card">
+      <div class="card-label example">Exercice guidé — MacLaurin de $e^x$ à l'ordre 3</div>
+      <p>Construire $T_{f,0,3}(x)$ pour $f(x) = e^x$.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <p><strong>Dérivées :</strong> $f'(x) = e^x$, $f''(x) = e^x$, $f'''(x) = e^x$ — toutes égales à $e^x$.</p>
+          </div>
         </div>
-        <div>
-          <h4>$\sin x$ (MacLaurin)</h4>
-          <div class="formula-box">$$\sin x = x - \frac{x^3}{6} + \frac{x^5}{120} - \cdots$$</div>
-          <p style="font-size:13px;color:var(--text-muted);">Uniquement des puissances impaires.</p>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <p><strong>Évaluation en $a = 0$ :</strong> $f(0) = f'(0) = f''(0) = f'''(0) = 1$.</p>
+          </div>
         </div>
-        <div>
-          <h4>$\cos x$ (MacLaurin)</h4>
-          <div class="formula-box">$$\cos x = 1 - \frac{x^2}{2} + \frac{x^4}{24} - \cdots$$</div>
-          <p style="font-size:13px;color:var(--text-muted);">Uniquement des puissances paires.</p>
-        </div>
-        <div>
-          <h4>$\ln(1+x)$ (MacLaurin)</h4>
-          <div class="formula-box">$$\ln(1+x) = x - \frac{x^2}{2} + \frac{x^3}{3} - \cdots$$</div>
-          <p style="font-size:13px;color:var(--text-muted);">Valide pour $|x| \leq 1$ (sauf $x=-1$).</p>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <p><strong>Substitution dans la formule :</strong></p>
+            <p>$$T_{f,0,3}(x) = \frac{1}{0!}x^0 + \frac{1}{1!}x^1 + \frac{1}{2!}x^2 + \frac{1}{3!}x^3 = 1 + x + \frac{x^2}{2} + \frac{x^3}{6}$$</p>
+          </div>
         </div>
       </div>
+      <div class="result-box">$$T_{e^x,0,3}(x) = 1 + x + \frac{x^2}{2} + \frac{x^3}{6}$$</div>
+    </div>
+
+    <!-- Interactive: MacLaurin of sin x -->
+    <div class="quiz-block" id="quiz-s6-pre">
+      <div class="quiz-title">Exercice interactif — MacLaurin de $\sin x$ à l'ordre 3</div>
+      <p class="quiz-question">On construit $T_{\sin,0,3}(x)$. Les dérivées successives de $\sin x$ en $0$ sont : $f(0)=0$, $f'(0)=1$, $f''(0)=0$, $f'''(0)=-1$. Quel est le polynôme ?</p>
+      <div class="qcm-options">
+        <div class="qcm-opt" onclick="checkQCM(this,'s6pre','wrong')">
+          <span class="qcm-opt-letter">A</span>
+          <span>$x + \dfrac{x^2}{2} - \dfrac{x^3}{6}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s6pre','correct')">
+          <span class="qcm-opt-letter">B</span>
+          <span>$x - \dfrac{x^3}{6}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s6pre','wrong')">
+          <span class="qcm-opt-letter">C</span>
+          <span>$1 + x - \dfrac{x^3}{6}$</span>
+        </div>
+        <div class="qcm-opt" onclick="checkQCM(this,'s6pre','wrong')">
+          <span class="qcm-opt-letter">D</span>
+          <span>$x - \dfrac{x^2}{2} + \dfrac{x^3}{6}$</span>
+        </div>
+      </div>
+      <span class="hint-toggle" onclick="toggleHint('h6pre')">Voir le détail</span>
+      <div class="hint-content" id="h6pre">
+        On substitue terme par terme : $\frac{f(0)}{0!}x^0 + \frac{f'(0)}{1!}x + \frac{f''(0)}{2!}x^2 + \frac{f'''(0)}{3!}x^3 = 0 + x + 0 - \frac{x^3}{6}$. Le terme en $x^2$ disparaît car $f''(0)=0$.
+      </div>
+      <div class="feedback" id="fb-s6pre"></div>
     </div>
 
     <!-- Worked example: Taylor of f(x) = sqrt(x) around a=1 (exam Q8!) -->
@@ -1654,6 +1686,10 @@ function checkQCM(el, sectionId, verdict) {
     's5': {
       correct: 'Parfait ! L\'Hôpital deux fois : $\\frac{1-\\cos x}{x^2} \\overset{H}{=} \\frac{\\sin x}{2x} \\overset{H}{=} \\frac{\\cos x}{2} \\to \\frac{1}{2}$.',
       wrong: 'Applique L\'Hôpital deux fois. $\\frac{(1-\\cos x)\'}{(x^2)\'} = \\frac{\\sin x}{2x}$ — toujours $\\frac{0}{0}$. Puis $\\frac{\\cos x}{2} \\to \\frac{1}{2}$.'
+    },
+    's6pre': {
+      correct: 'Exact ! Les termes avec $f^{(k)}(0)=0$ (ordres 0 et 2) disparaissent. Il reste $x - \\frac{x^3}{6}$.',
+      wrong: 'Rappel : $T = \\frac{f(0)}{0!} + \\frac{f\'(0)}{1!}x + \\frac{f\'\'(0)}{2!}x^2 + \\frac{f\'\'\'(0)}{3!}x^3 = 0 + x + 0 - \\frac{x^3}{6}$. Réponse B.'
     },
     's6': {
       correct: 'Très bien ! On substitue $u=-x^2/2$ dans $e^u \\approx 1+u+\\frac{u^2}{2}$ : $1 - \\frac{x^2}{2} + \\frac{x^4}{8}$.',
